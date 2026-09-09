@@ -1,0 +1,469 @@
+{
+  "id": "no.joymyr.sesam-pay",
+  "version": "1.0.0",
+  "compatibility": ">=12.4.0",
+  "sdk": 3,
+  "runtime": "nodejs",
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Sesam Pay",
+    "no": "Sesam Pay"
+  },
+  "description": {
+    "en": "Automatic notification and fee-free payment within 48 hours",
+    "no": "Automatisk varsling og gebyrfri betaling innen 48 timer"
+  },
+  "category": [
+    "tools"
+  ],
+  "author": {
+    "name": "Jon Harald Øymyr",
+    "email": "joymyr@gmail.com"
+  },
+  "api": {
+    "getStatus": {
+      "method": "get",
+      "path": "/status",
+      "public": false
+    },
+    "syncVehicle": {
+      "method": "post",
+      "path": "/sync",
+      "public": false
+    }
+  },
+  "capabilities": {
+    "sesam_unpaid_amount": {
+      "type": "number",
+      "title": {
+        "en": "Unpaid Amount",
+        "no": "Utestående beløp"
+      },
+      "units": {
+        "en": "kr",
+        "no": "kr"
+      },
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "sesam_facility": {
+      "type": "string",
+      "title": {
+        "en": "Parking Facility",
+        "no": "Parkeringsanlegg"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "sesam_hours_remaining": {
+      "type": "number",
+      "title": {
+        "en": "Hours Remaining",
+        "no": "Frist gjenstår"
+      },
+      "units": {
+        "en": "h",
+        "no": "t"
+      },
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "sesam_payment_url": {
+      "type": "string",
+      "title": {
+        "en": "Payment Link",
+        "no": "Betalingslenke"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null
+    },
+    "button_sync": {
+      "type": "boolean",
+      "title": {
+        "en": "Check Parking Now",
+        "no": "Sjekk parkering nå"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/assets/icon.svg"
+    }
+  },
+  "drivers": [
+    {
+      "id": "vehicle",
+      "name": {
+        "en": "Vehicle",
+        "no": "Kjøretøy"
+      },
+      "class": "other",
+      "capabilities": [
+        "alarm_generic",
+        "sesam_unpaid_amount",
+        "sesam_facility",
+        "sesam_hours_remaining",
+        "sesam_payment_url",
+        "button_sync"
+      ],
+      "capabilitiesOptions": {
+        "alarm_generic": {
+          "title": {
+            "en": "Unpaid Parking",
+            "no": "Ubetalt parkering"
+          },
+          "insightsTitleTrue": {
+            "en": "Unpaid parking detected",
+            "no": "Ubetalt parkering oppdaget"
+          },
+          "insightsTitleFalse": {
+            "en": "No unpaid parking",
+            "no": "Ingen ubetalt parkering"
+          }
+        },
+        "button_sync": {
+          "title": {
+            "en": "Check Parking Now",
+            "no": "Sjekk parkering nå"
+          }
+        }
+      },
+      "settings": [
+        {
+          "id": "reg_number",
+          "type": "text",
+          "label": {
+            "en": "Registration Number",
+            "no": "Registreringsnummer"
+          },
+          "hint": {
+            "en": "e.g. EC66453",
+            "no": "f.eks. EC66453"
+          },
+          "value": ""
+        },
+        {
+          "id": "poll_interval",
+          "type": "number",
+          "label": {
+            "en": "Poll interval (minutes)",
+            "no": "Sjekkintervall (minutter)"
+          },
+          "hint": {
+            "en": "How often to check for unpaid parkings (minimum 5 minutes)",
+            "no": "Hvor ofte det skal sjekkes etter nye parkeringer (minimum 5 minutter)"
+          },
+          "value": 30,
+          "min": 5,
+          "max": 1440
+        },
+        {
+          "id": "auto_timeline",
+          "type": "checkbox",
+          "label": {
+            "en": "Automatic Timeline notification",
+            "no": "Automatisk varsel i Homey Tidslinje"
+          },
+          "hint": {
+            "en": "Automatically post to Homey Timeline when unpaid parking is found",
+            "no": "Legg ut formatert varsel på tidslinjen når ny parkering oppdages"
+          },
+          "value": true
+        },
+        {
+          "id": "email",
+          "type": "text",
+          "label": {
+            "en": "Email for receipt (optional)",
+            "no": "E-post for kvittering (valgfritt)"
+          },
+          "value": ""
+        }
+      ],
+      "pair": [
+        {
+          "id": "add_vehicle"
+        }
+      ],
+      "repair": [
+        {
+          "id": "pay_dashboard"
+        }
+      ],
+      "images": {
+        "small": "/drivers/vehicle/assets/icon.svg",
+        "large": "/drivers/vehicle/assets/icon.svg"
+      }
+    }
+  ],
+  "flow": {
+    "triggers": [
+      {
+        "id": "unpaid_parking_found",
+        "title": {
+          "en": "Unpaid parking detected",
+          "no": "Ny ubetalt parkering oppdaget"
+        },
+        "tokens": [
+          {
+            "name": "regnr",
+            "type": "string",
+            "title": {
+              "en": "Registration number",
+              "no": "Registreringsnummer"
+            },
+            "example": "EC66453"
+          },
+          {
+            "name": "facility",
+            "type": "string",
+            "title": {
+              "en": "Parking facility",
+              "no": "Parkeringsanlegg"
+            },
+            "example": "BP Bygarasjen"
+          },
+          {
+            "name": "amount",
+            "type": "number",
+            "title": {
+              "en": "Amount (kr)",
+              "no": "Beløp (kr)"
+            },
+            "example": 24
+          },
+          {
+            "name": "hours_remaining",
+            "type": "number",
+            "title": {
+              "en": "Hours remaining",
+              "no": "Timer gjenstår av frist"
+            },
+            "example": 47.5
+          },
+          {
+            "name": "deadline_str",
+            "type": "string",
+            "title": {
+              "en": "Deadline (date/time)",
+              "no": "Betalingsfrist (dato/tid)"
+            },
+            "example": "11.09.2026 11:39"
+          },
+          {
+            "name": "formatted_message",
+            "type": "string",
+            "title": {
+              "en": "Formatted message",
+              "no": "Ferdig formatert varseltekst"
+            },
+            "example": "🚗 Ubetalt parkering: BP Bygarasjen (24 kr)..."
+          },
+          {
+            "name": "payment_url",
+            "type": "string",
+            "title": {
+              "en": "Payment link",
+              "no": "Betalingslenke"
+            },
+            "example": "https://psp-ecommerce.payex.com/..."
+          },
+          {
+            "name": "end_time",
+            "type": "string",
+            "title": {
+              "en": "Exit time",
+              "no": "Utkjøringstidspunkt"
+            },
+            "example": "09.09.2026 11:39"
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=vehicle"
+          }
+        ]
+      },
+      {
+        "id": "deadline_approaching",
+        "title": {
+          "en": "Payment deadline is approaching (< 12h)",
+          "no": "Betalingsfrist utløper snart (< 12t)"
+        },
+        "tokens": [
+          {
+            "name": "regnr",
+            "type": "string",
+            "title": {
+              "en": "Registration number",
+              "no": "Registreringsnummer"
+            },
+            "example": "EC66453"
+          },
+          {
+            "name": "facility",
+            "type": "string",
+            "title": {
+              "en": "Parking facility",
+              "no": "Parkeringsanlegg"
+            },
+            "example": "BP Bygarasjen"
+          },
+          {
+            "name": "amount",
+            "type": "number",
+            "title": {
+              "en": "Amount (kr)",
+              "no": "Beløp (kr)"
+            },
+            "example": 24
+          },
+          {
+            "name": "hours_remaining",
+            "type": "number",
+            "title": {
+              "en": "Hours remaining",
+              "no": "Timer gjenstår av frist"
+            },
+            "example": 11.5
+          },
+          {
+            "name": "deadline_str",
+            "type": "string",
+            "title": {
+              "en": "Deadline (date/time)",
+              "no": "Betalingsfrist (dato/tid)"
+            },
+            "example": "11.09.2026 11:39"
+          },
+          {
+            "name": "formatted_message",
+            "type": "string",
+            "title": {
+              "en": "Formatted message",
+              "no": "Ferdig formatert varseltekst"
+            },
+            "example": "⏳ Frist utløper snart: BP Bygarasjen..."
+          },
+          {
+            "name": "payment_url",
+            "type": "string",
+            "title": {
+              "en": "Payment link",
+              "no": "Betalingslenke"
+            },
+            "example": "https://psp-ecommerce.payex.com/..."
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=vehicle"
+          }
+        ]
+      },
+      {
+        "id": "parking_paid",
+        "title": {
+          "en": "Parking has been paid",
+          "no": "Parkering er betalt/oppgjort"
+        },
+        "tokens": [
+          {
+            "name": "regnr",
+            "type": "string",
+            "title": {
+              "en": "Registration number",
+              "no": "Registreringsnummer"
+            },
+            "example": "EC66453"
+          },
+          {
+            "name": "facility",
+            "type": "string",
+            "title": {
+              "en": "Parking facility",
+              "no": "Parkeringsanlegg"
+            },
+            "example": "BP Bygarasjen"
+          },
+          {
+            "name": "amount",
+            "type": "number",
+            "title": {
+              "en": "Amount (kr)",
+              "no": "Beløp (kr)"
+            },
+            "example": 24
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=vehicle"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "has_unpaid_parking",
+        "title": {
+          "en": "!{{Has|Does not have}} unpaid parking",
+          "no": "!{{Har|Har ikke}} ubetalt parkering"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=vehicle"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "check_unpaid_now",
+        "title": {
+          "en": "Check unpaid parkings now",
+          "no": "Sjekk ubetalte parkeringer nå"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=vehicle"
+          }
+        ]
+      },
+      {
+        "id": "send_timeline_notification",
+        "title": {
+          "en": "Send payment notification to Timeline",
+          "no": "Send betalingsvarsel til Tidslinjen"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=vehicle"
+          }
+        ]
+      }
+    ]
+  }
+}

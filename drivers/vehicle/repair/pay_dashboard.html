@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Betal parkering</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 16px;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-top: 10px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .badge.unpaid { background: #fee2e2; color: #b91c1c; }
+    .badge.paid { background: #d1fae5; color: #047857; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e2e8f0;
+      font-size: 14px;
+    }
+    .row:last-child { border-bottom: none; }
+    .label { color: #64748b; }
+    .val { font-weight: 600; color: #0f172a; }
+    .btn-pay {
+      display: block;
+      width: 100%;
+      background: #2563eb;
+      color: #ffffff !important;
+      text-align: center;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      margin-top: 16px;
+      text-decoration: none;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+    .btn-pay:active { background: #1d4ed8; }
+    .btn-close {
+      display: block;
+      width: 100%;
+      background: #e2e8f0;
+      color: #334155;
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 10px;
+      border: none;
+      cursor: pointer;
+    }
+    .loader { text-align: center; padding: 30px; color: #64748b; }
+  </style>
+</head>
+<body>
+
+  <div id="content">
+    <div class="loader">Henter parkeringsstatus...</div>
+  </div>
+
+  <script>
+    let isRendered = false;
+
+    function init() {
+      const h = window.Homey;
+
+      if (!h) {
+        setTimeout(init, 100);
+        return;
+      }
+
+      // Forsøk 1: emit mot repair handler i driver.ts
+      if (typeof h.emit === 'function') {
+        h.emit('get_device_status', {}, function(err, status) {
+          if (!err && status && !isRendered) {
+            renderStatus(status);
+          }
+        });
+      }
+
+      // Forsøk 2: fallback mot /status REST API
+      if (typeof h.api === 'function') {
+        h.api('GET', '/status', function(err, vehicles) {
+          if (!err && vehicles && vehicles.length > 0 && !isRendered) {
+            const active = vehicles.find(v => v.hasUnpaid) || vehicles[0];
+            renderStatus(active);
+          }
+        });
+      }
+    }
+
+    function renderStatus(status) {
+      isRendered = true;
+      const c = document.getElementById('content');
+      if (!status) {
+        c.innerHTML = '<p style="color:#ef4444; padding:20px; text-align:center;">Ingen parkeringsstatus funnet.</p>';
+        return;
+      }
+
+      if (status.hasUnpaid) {
+        c.innerHTML = `
+          <div class="card">
+            <span class="badge unpaid">● Ubetalt parkering funnet</span>
+            <div class="row"><span class="label">Kjøretøy</span><span class="val">${escapeHtml(status.name)} (${escapeHtml(status.regNumber)})</span></div>
+            <div class="row"><span class="label">Sted</span><span class="val">${escapeHtml(status.facility)}</span></div>
+            <div class="row"><span class="label">Beløp</span><span class="val" style="color:#b91c1c; font-size:16px;">${status.amount} NOK</span></div>
+            <div class="row"><span class="label">Gjenstående tid</span><span class="val">${status.hoursRemaining} timer</span></div>
+            
+            <a href="${status.paymentUrl}" target="_blank" class="btn-pay" onclick="openUrl('${status.paymentUrl}', event)">
+              💳 Åpne betaling (${status.amount} kr) ↗
+            </a>
+            <button class="btn-close" onclick="closeView()">Lukk</button>
+          </div>
+        `;
+      } else {
+        c.innerHTML = `
+          <div class="card">
+            <span class="badge paid">✓ Ingen ubetalte parkeringer</span>
+            <p style="font-size:14px; color:#475569; margin: 10px 0;">Alt er oppgjort for ${escapeHtml(status.name)} (${escapeHtml(status.regNumber)}).</p>
+            <button class="btn-close" onclick="closeView()">Lukk</button>
+          </div>
+        `;
+      }
+    }
+
+    function openUrl(url, event) {
+      const h = window.Homey;
+      if (h && typeof h.openURL === 'function') {
+        if (event) event.preventDefault();
+        h.openURL(url);
+      }
+    }
+
+    function closeView() {
+      const h = window.Homey;
+      if (h && typeof h.done === 'function') {
+        h.done();
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Kjør initialisering umiddelbart
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>

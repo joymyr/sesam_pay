@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Legg til kjøretøy</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 15px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    input[type="text"], input[type="number"], input[type="email"] {
+      width: 100%;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    .hint {
+      font-size: 12px;
+      color: #777;
+      margin-top: 4px;
+    }
+    .error {
+      color: #d32f2f;
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+    }
+    .btn {
+      background-color: #007aff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn:disabled {
+      background-color: #b0c4de;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-group">
+    <label for="name">Navn på kjøretøy</label>
+    <input type="text" id="name" placeholder="F.eks. Min Tesla eller VW Golf" />
+    <div class="hint">Valgfritt visningsnavn i Homey</div>
+  </div>
+
+  <div class="form-group">
+    <label for="regNumber">Registreringsnummer *</label>
+    <input type="text" id="regNumber" placeholder="F.eks. EC66453" style="text-transform: uppercase;" required />
+    <div class="hint">Norsk eller utenlandsk kjennetegn</div>
+  </div>
+
+  <div class="form-group">
+    <label for="pollInterval">Sjekkintervall (minutter)</label>
+    <input type="number" id="pollInterval" value="30" min="5" max="1440" />
+    <div class="hint">Hvor ofte appen sjekker etter nye ubetalte parkeringer</div>
+  </div>
+
+  <div class="form-group">
+    <label for="email">E-post for kvittering (valgfritt)</label>
+    <input type="email" id="email" placeholder="din@epost.no" />
+  </div>
+
+  <div id="error" class="error"></div>
+  <button id="submitBtn" class="btn" onclick="saveVehicle()">Legg til kjøretøy</button>
+
+  <script>
+    function saveVehicle() {
+      const nameInput = document.getElementById('name');
+      const regInput = document.getElementById('regNumber');
+      const pollInput = document.getElementById('pollInterval');
+      const emailInput = document.getElementById('email');
+      const errorDiv = document.getElementById('error');
+      const btn = document.getElementById('submitBtn');
+
+      const regNumber = regInput.value.trim().toUpperCase();
+      if (!regNumber || regNumber.length < 2) {
+        errorDiv.textContent = 'Vennligst oppgi et gyldig registreringsnummer.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      errorDiv.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Sjekker Sesam Sesam...';
+
+      Homey.emit('add_vehicle', {
+        name: nameInput.value.trim() || regNumber,
+        regNumber: regNumber,
+        pollInterval: parseInt(pollInput.value, 10) || 30,
+        email: emailInput.value.trim()
+      }, function(err, device) {
+        if (err) {
+          btn.disabled = false;
+          btn.textContent = 'Legg til kjøretøy';
+          errorDiv.textContent = err.message || err.toString();
+          errorDiv.style.display = 'block';
+          return;
+        }
+
+        Homey.createDevice(device, function(err) {
+          if (err) {
+            btn.disabled = false;
+            btn.textContent = 'Legg til kjøretøy';
+            errorDiv.textContent = err.message || err.toString();
+            errorDiv.style.display = 'block';
+            return;
+          }
+          Homey.done();
+        });
+      });
+    }
+  </script>
+</body>
+</html>

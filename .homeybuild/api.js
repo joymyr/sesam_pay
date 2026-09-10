@@ -17,10 +17,10 @@ module.exports = {
                 name: d.getName(),
                 regNumber: d.getSetting('reg_number') || d.getData().regNumber,
                 hasUnpaid: d.getCapabilityValue('alarm_generic') === true,
-                amount: d.getCapabilityValue('sesam_unpaid_amount') || 0,
+                amount: parseFloat(String(d.getCapabilityValue('sesam_unpaid_amount') || 0)) || 0,
                 facility: d.getCapabilityValue('sesam_facility') || 'Ingen',
-                hoursRemaining: d.getCapabilityValue('sesam_hours_remaining') || 0,
-                paymentUrl: d.getCapabilityValue('sesam_payment_url') || 'https://sesam-sesam.com/betal-for-parkering/',
+                hoursRemaining: parseFloat(String(d.getCapabilityValue('sesam_hours_remaining') || 0)) || 0,
+                paymentUrl: d.currentPaymentUrl || 'https://sesam-sesam.com/betal-for-parkering/',
             });
         }
         return list;

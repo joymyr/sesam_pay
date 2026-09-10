@@ -46,17 +46,24 @@ module.exports = class VehicleDriver extends Homey.Driver {
   }
 
   async onRepair(session: any, device: any): Promise<void> {
+    const getStatusObj = () => ({
+      id: device.getData().id,
+      name: device.getName(),
+      regNumber: device.getSetting('reg_number') || device.getData().regNumber,
+      hasUnpaid: device.getCapabilityValue('alarm_generic') === true,
+      amount: parseFloat(String(device.getCapabilityValue('sesam_unpaid_amount') || 0)) || 0,
+      facility: device.getCapabilityValue('sesam_facility') || 'Ingen',
+      hoursRemaining: parseFloat(String(device.getCapabilityValue('sesam_hours_remaining') || 0)) || 0,
+      paymentUrl: (device as any).currentPaymentUrl || 'https://sesam-sesam.com/betal-for-parkering/',
+    });
+
     session.setHandler('get_device_status', async () => {
-      return {
-        id: device.getData().id,
-        name: device.getName(),
-        regNumber: device.getSetting('reg_number') || device.getData().regNumber,
-        hasUnpaid: device.getCapabilityValue('alarm_generic') === true,
-        amount: device.getCapabilityValue('sesam_unpaid_amount') || 0,
-        facility: device.getCapabilityValue('sesam_facility') || 'Ingen',
-        hoursRemaining: device.getCapabilityValue('sesam_hours_remaining') || 0,
-        paymentUrl: device.getCapabilityValue('sesam_payment_url') || 'https://sesam-sesam.com/betal-for-parkering/',
-      };
+      return getStatusObj();
+    });
+
+    session.setHandler('sync_device', async () => {
+      await device.syncUnpaidParking();
+      return getStatusObj();
     });
   }
 

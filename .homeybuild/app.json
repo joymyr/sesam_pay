@@ -130,8 +130,8 @@
             "no": "Registreringsnummer"
           },
           "hint": {
-            "en": "e.g. EC66453",
-            "no": "f.eks. EC66453"
+            "en": "e.g. AB12345",
+            "no": "f.eks. AB12345"
           },
           "value": ""
         },
@@ -205,7 +205,7 @@
               "en": "Registration number",
               "no": "Registreringsnummer"
             },
-            "example": "EC66453"
+            "example": "AB12345"
           },
           {
             "name": "facility",
@@ -293,7 +293,7 @@
               "en": "Registration number",
               "no": "Registreringsnummer"
             },
-            "example": "EC66453"
+            "example": "AB12345"
           },
           {
             "name": "facility",
@@ -372,7 +372,7 @@
               "en": "Registration number",
               "no": "Registreringsnummer"
             },
-            "example": "EC66453"
+            "example": "AB12345"
           },
           {
             "name": "facility",
@@ -415,7 +415,7 @@
               "en": "Vehicle name",
               "no": "Kjøretøynavn"
             },
-            "example": "Mustang pay"
+            "example": "Min bil"
           },
           {
             "name": "regnr",
@@ -424,7 +424,7 @@
               "en": "Registration number",
               "no": "Registreringsnummer"
             },
-            "example": "EC66453"
+            "example": "AB12345"
           },
           {
             "name": "facility",
@@ -505,7 +505,7 @@
               "en": "Vehicle name",
               "no": "Kjøretøynavn"
             },
-            "example": "Mustang pay"
+            "example": "Min bil"
           },
           {
             "name": "regnr",
@@ -514,7 +514,7 @@
               "en": "Registration number",
               "no": "Registreringsnummer"
             },
-            "example": "EC66453"
+            "example": "AB12345"
           },
           {
             "name": "facility",
@@ -586,7 +586,7 @@
               "en": "Vehicle name",
               "no": "Kjøretøynavn"
             },
-            "example": "Mustang pay"
+            "example": "Min bil"
           },
           {
             "name": "regnr",
@@ -595,7 +595,7 @@
               "en": "Registration number",
               "no": "Registreringsnummer"
             },
-            "example": "EC66453"
+            "example": "AB12345"
           },
           {
             "name": "facility",

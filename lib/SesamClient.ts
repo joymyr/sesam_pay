@@ -7,7 +7,7 @@ export class SesamClient {
 
   /**
    * Sjekker om det finnes ubetalte parkeringer for et gitt registreringsnummer.
-   * @param regNumber Bilens registreringsnummer (f.eks. "EC66453")
+   * @param regNumber Bilens registreringsnummer (f.eks. "AB12345")
    */
   public static async checkUnpaid(regNumber: string): Promise<CheckUnpaidResult> {
     const cleanReg = regNumber.replace(/\s+/g, '').toLowerCase();

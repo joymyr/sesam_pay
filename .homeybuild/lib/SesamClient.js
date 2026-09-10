@@ -5,7 +5,7 @@ const node_html_parser_1 = require("node-html-parser");
 class SesamClient {
     /**
      * Sjekker om det finnes ubetalte parkeringer for et gitt registreringsnummer.
-     * @param regNumber Bilens registreringsnummer (f.eks. "EC66453")
+     * @param regNumber Bilens registreringsnummer (f.eks. "AB12345")
      */
     static async checkUnpaid(regNumber) {
         const cleanReg = regNumber.replace(/\s+/g, '').toLowerCase();

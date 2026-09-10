@@ -5,7 +5,7 @@ Unngå servicetillegg på parkering! Automatisk overvåking og gebyrfri betaling
 ---
 
 ### 💰 Bakgrunn
-Ved automatisk trekk i apper som Sesam Sesam og EasyPark legges det til et servicetillegg på **15 %** (min. 5 kr, maks 50 kr per parkering) på anlegg med automatisk skiltgjenkjenning.
+Ved automatisk trekk i apper som Sesam Sesam og EasyPark legges det til et servicetillegg på **15 %** (min. 5 kr, maks 50 kr per parkering) på anlegg med automatisk skiltgjenkjenning (ANPR).
 
 Betaler du derimot direkte på [sesam-sesam.com](https://sesam-sesam.com/) innen **48 timer** etter at parkeringen er avsluttet, slipper du servicetillegget helt! Utfordringen er å huske denne 48-timersfristen før det utstedes faktura med ekstra gebyrer.
 
@@ -18,6 +18,12 @@ Betaler du derimot direkte på [sesam-sesam.com](https://sesam-sesam.com/) innen
   - **Triggere:** *Ubetalt parkering oppdaget*, *Betalingsfrist utløper snart*, *Parkering er betalt* (både for spesifikk bil og generelt for alle kjøretøy).
   - **Betingelser:** *Har/Har ikke ubetalt parkering*, *Minst ett/Ingen kjøretøy har ubetalt parkering*.
   - **Handlinger:** *Sjekk ubetalte parkeringer nå*, *Sjekk alle kjøretøy nå*, *Send betalingsvarsel til Tidslinjen*.
+
+---
+
+### ⚠️ Ansvarsfraskrivelse (Disclaimer)
+Dette er en **uoffisiell** app utviklet uavhengig for Homey, og er ikke tilknyttet, sponset eller godkjent av Hi Tech Mobility AS, Sesam Sesam, EasyPark eller Bergen Parkering.
+Alle varemerker og logoer tilhører sine respektive eiere.
 
 ---
 

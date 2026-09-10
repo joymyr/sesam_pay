@@ -18,9 +18,18 @@
   "category": [
     "tools"
   ],
+  "brandColor": "#2563eb",
+  "source": "https://github.com/joymyr/sesam_pay",
+  "bugs": {
+    "url": "https://github.com/joymyr/sesam_pay/issues"
+  },
   "author": {
     "name": "Jon Harald Øymyr",
     "email": "joymyr@gmail.com"
+  },
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png"
   },
   "api": {
     "getStatus": {
@@ -175,8 +184,8 @@
         }
       ],
       "images": {
-        "small": "/drivers/vehicle/assets/icon.svg",
-        "large": "/drivers/vehicle/assets/icon.svg"
+        "small": "/drivers/vehicle/assets/images/small.png",
+        "large": "/drivers/vehicle/assets/images/large.png"
       }
     }
   ],

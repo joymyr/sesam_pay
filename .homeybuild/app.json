@@ -12,15 +12,24 @@
     "no": "Sesam Pay"
   },
   "description": {
-    "en": "Automatic notification and fee-free payment within 48 hours",
-    "no": "Automatisk varsling og gebyrfri betaling innen 48 timer"
+    "en": "Avoid parking service fees. Automatic alerts and fee-free payment before the 48-hour deadline.",
+    "no": "Unngå servicetillegg på parkering. Automatisk varsling og gebyrfri betaling innen 48-timersfristen."
   },
   "category": [
     "tools"
   ],
+  "brandColor": "#2563eb",
+  "source": "https://github.com/joymyr/sesam_pay",
+  "bugs": {
+    "url": "https://github.com/joymyr/sesam_pay/issues"
+  },
   "author": {
     "name": "Jon Harald Øymyr",
     "email": "joymyr@gmail.com"
+  },
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png"
   },
   "api": {
     "getStatus": {
@@ -175,8 +184,8 @@
         }
       ],
       "images": {
-        "small": "/drivers/vehicle/assets/icon.svg",
-        "large": "/drivers/vehicle/assets/icon.svg"
+        "small": "/drivers/vehicle/assets/images/small.png",
+        "large": "/drivers/vehicle/assets/images/large.png"
       }
     }
   ],

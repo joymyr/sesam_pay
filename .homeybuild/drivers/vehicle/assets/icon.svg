@@ -1,12 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <!-- Modern Car Silhouette -->
-  <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9C2.1 11.1 2 11.5 2 12v4c0 .6.4 1 1 1h2"/>
-  <circle cx="7" cy="17" r="2"/>
-  <path d="M9 17h6"/>
-  <circle cx="17" cy="17" r="2"/>
-  <!-- Front windshield divider -->
-  <path d="M5 11h14"/>
-  <!-- Parking badge detail on top -->
-  <path d="M15 4h3a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-3z"/>
-  <path d="M15 4v6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+  <!-- Clean, bold, recognizable car profile for Homey tiles -->
+  <path d="M 18.92 6.01
+           C 18.72 5.42 18.16 5 17.5 5
+           L 6.5 5
+           C 5.84 5 5.28 5.42 5.08 6.01
+           L 3 12
+           L 3 20
+           C 3 20.55 3.45 21 4 21
+           L 5 21
+           C 5.55 21 6 20.55 6 20
+           L 6 19
+           L 18 19
+           L 18 20
+           C 18 20.55 18.45 21 19 21
+           L 20 21
+           C 20.55 21 21 20.55 21 20
+           L 21 12
+           L 18.92 6.01 Z
+           M 6.85 7
+           L 17.14 7
+           L 18.22 10.16
+           L 5.77 10.16
+           L 6.85 7 Z
+           M 6.5 16
+           C 5.67 16 5 15.33 5 14.5
+           C 5 13.67 5.67 13 6.5 13
+           C 7.33 13 8 13.67 8 14.5
+           C 8 15.33 7.33 16 6.5 16 Z
+           M 17.5 16
+           C 16.67 16 16 15.33 16 14.5
+           C 16 13.67 16.67 13 17.5 13
+           C 18.33 13 19 13.67 19 14.5
+           C 19 15.33 18.33 16 17.5 16 Z"/>
 </svg>

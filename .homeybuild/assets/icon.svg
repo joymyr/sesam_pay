@@ -1,80 +1,80 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
-  <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2563eb"/>
-      <stop offset="100%" stop-color="#1d4ed8"/>
-    </linearGradient>
-    <linearGradient id="pGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#60a5fa"/>
-      <stop offset="100%" stop-color="#3b82f6"/>
-    </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.25"/>
-    </filter>
-  </defs>
+  <!-- Clean white vector artwork with transparent background for Homey's circular icon container -->
+  <g fill="#ffffff">
+    <!-- Parking 'P' badge on the top right -->
+    <path d="M 320 80
+             C 355 80 384 109 384 144
+             C 384 179 355 208 320 208
+             L 280 208
+             L 280 250
+             C 280 257 274 262 267 262
+             L 253 262
+             C 246 262 240 257 240 250
+             L 240 92
+             C 240 85 246 80 253 80
+             Z
+             M 280 120
+             L 280 168
+             L 320 168
+             C 333 168 344 157 344 144
+             C 344 131 333 120 320 120
+             Z"/>
 
-  <!-- Background rounded squircle -->
-  <rect x="32" y="32" width="448" height="448" rx="104" fill="url(#bgGrad)"/>
+    <!-- Contactless signal waves (Smart payment) on top left -->
+    <path d="M 140 160
+             C 170 125 215 105 260 105
+             C 267 105 272 110 272 117
+             C 272 124 267 129 260 129
+             C 221 129 183 146 157 176
+             C 152 181 145 181 140 177
+             C 135 172 135 165 140 160 Z"
+          opacity="0.9"/>
+    <path d="M 165 190
+             C 188 165 220 150 255 150
+             C 262 150 267 155 267 162
+             C 267 169 262 174 255 174
+             C 226 174 199 187 180 208
+             C 175 213 168 213 163 208
+             C 159 203 160 195 165 190 Z"
+          opacity="0.8"/>
 
-  <!-- Subtle inner border glow -->
-  <rect x="34" y="34" width="444" height="444" rx="102" fill="none" stroke="#ffffff" stroke-width="3" stroke-opacity="0.2"/>
+    <!-- Modern Car Silhouette -->
+    <path d="M 80 340
+             L 84 310
+             C 88 296 98 285 112 282
+             L 165 272
+             C 182 232 216 202 260 196
+             L 352 196
+             C 385 196 414 216 428 245
+             L 452 278
+             C 464 285 472 298 472 312
+             L 472 344
+             C 472 353 465 360 456 360
+             L 434 360
+             C 430 393 402 418 368 418
+             C 334 418 306 393 302 360
+             L 210 360
+             C 206 393 178 418 144 418
+             C 110 418 82 393 78 360
+             L 56 360
+             C 47 360 40 353 40 344
+             L 40 336
+             C 40 328 46 322 54 322
+             L 80 322
+             Z
+             M 172 270
+             L 256 270
+             L 256 220
+             L 230 220
+             C 202 220 180 242 172 270 Z
+             M 280 220
+             L 280 270
+             L 396 270
+             L 368 228
+             C 360 223 350 220 340 220 Z"/>
 
-  <!-- Decorative Parking 'P' badge in top-right -->
-  <g filter="url(#shadow)">
-    <circle cx="360" cy="150" r="64" fill="#ffffff"/>
-    <!-- Bold 'P' -->
-    <path d="M342 114 h30 c18 0 30 10 30 25 c0 16 -12 25 -30 25 h-16 v26 h-14 z M356 128 v22 h14 c8 0 16 -4 16 -11 c0 -8 -8 -11 -16 -11 z" fill="#2563eb"/>
-  </g>
-
-  <!-- Modern Car Silhouette & Pay Waves -->
-  <g filter="url(#shadow)">
-    <!-- Contactless / Smart Waves above car front -->
-    <path d="M120 180 A 60 60 0 0 1 180 120" fill="none" stroke="#93c5fd" stroke-width="12" stroke-linecap="round"/>
-    <path d="M136 200 A 36 36 0 0 1 176 160" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
-
-    <!-- Car Body -->
-    <path d="M 96 352
-             L 100 320
-             C 104 310 114 302 126 300
-             L 174 290
-             C 190 254 222 226 266 220
-             L 340 220
-             C 370 220 396 238 410 264
-             L 434 296
-             C 446 302 454 314 456 328
-             L 456 360
-             C 456 366 450 372 444 372
-             L 426 372
-             C 424 394 406 412 384 412
-             C 362 412 344 394 342 372
-             L 214 372
-             C 212 394 194 412 172 412
-             C 150 412 132 394 130 372
-             L 108 372
-             C 101 372 96 366 96 352 Z"
-          fill="#ffffff"/>
-
-    <!-- Car Windows -->
-    <path d="M 264 238
-             L 204 292
-             L 294 292
-             L 294 238 Z"
-          fill="#1e40af" opacity="0.85"/>
-    <path d="M 310 238
-             L 310 292
-             L 404 292
-             L 374 246
-             C 366 240 354 238 344 238 Z"
-          fill="#1e40af" opacity="0.85"/>
-
-    <!-- Wheels -->
-    <circle cx="172" cy="372" r="26" fill="#1e293b"/>
-    <circle cx="172" cy="372" r="12" fill="#94a3b8"/>
-
-    <circle cx="384" cy="372" r="26" fill="#1e293b"/>
-    <circle cx="384" cy="372" r="12" fill="#94a3b8"/>
-
-    <!-- Headlight -->
-    <path d="M 104 330 Q 98 340 108 346 L 126 342 Z" fill="#fde047"/>
+    <!-- Wheel Cutouts / Rims -->
+    <circle cx="144" cy="360" r="18" fill="#2563eb"/>
+    <circle cx="368" cy="360" r="18" fill="#2563eb"/>
   </g>
 </svg>

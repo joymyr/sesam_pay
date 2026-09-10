@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 350" width="500" height="350">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="50%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="carGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="500" height="350" rx="24" fill="url(#bg)"/>
+
+  <!-- Subtle glow/ring elements in background -->
+  <circle cx="250" cy="175" r="160" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="2"/>
+  <circle cx="250" cy="175" r="210" fill="none" stroke="#ffffff" stroke-opacity="0.03" stroke-width="2"/>
+
+  <!-- Main Illustration Group (Centered) -->
+  <g transform="translate(10, -5)" filter="url(#shadow)">
+    
+    <!-- Parking 'P' Badge -->
+    <g transform="translate(345, 65)">
+      <circle cx="0" cy="0" r="38" fill="#ffffff"/>
+      <!-- Letter P -->
+      <path d="M -10 -20 H 6 C 16 -20 22 -14 22 -5 C 22 4 16 10 6 10 H -1 V 22 H -10 Z M -1 -12 V 2 H 6 C 10 2 13 -1 13 -5 C 13 -9 10 -12 6 -12 Z" fill="#2563eb"/>
+    </g>
+
+    <!-- Wireless / Contactless Waves (Smart pay) -->
+    <g transform="translate(135, 95)">
+      <path d="M -20 15 A 40 40 0 0 1 20 -25" fill="none" stroke="#93c5fd" stroke-width="7" stroke-linecap="round"/>
+      <path d="M -10 25 A 25 25 0 0 1 15 0" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+    </g>
+
+    <!-- Modern Car -->
+    <g transform="translate(45, 75)">
+      <!-- Car Body -->
+      <path d="M 40 180
+               L 44 152
+               C 48 140 56 130 68 127
+               L 115 118
+               C 130 82 160 55 200 50
+               L 280 50
+               C 310 50 336 68 348 94
+               L 370 124
+               C 380 130 388 142 388 155
+               L 388 184
+               C 388 192 382 198 374 198
+               L 354 198
+               C 350 228 325 250 295 250
+               C 265 250 240 228 236 198
+               L 154 198
+               C 150 228 125 250 95 250
+               C 65 250 40 228 36 198
+               L 24 198
+               C 16 198 10 192 10 184
+               L 10 178
+               C 10 170 16 164 24 164
+               L 40 164 Z"
+            fill="url(#carGrad)"/>
+
+      <!-- Windows -->
+      <path d="M 122 116 L 195 116 L 195 70 L 170 70 C 145 70 128 90 122 116 Z" fill="#1e40af" opacity="0.85"/>
+      <path d="M 215 70 L 215 116 L 318 116 L 294 78 C 286 73 276 70 268 70 Z" fill="#1e40af" opacity="0.85"/>
+
+      <!-- Headlight -->
+      <path d="M 22 168 Q 14 175 22 180 L 38 177 Z" fill="#fde047"/>
+
+      <!-- Wheels -->
+      <circle cx="95" cy="200" r="26" fill="#0f172a"/>
+      <circle cx="95" cy="200" r="12" fill="#94a3b8"/>
+      <circle cx="95" cy="200" r="5" fill="#f8fafc"/>
+
+      <circle cx="295" cy="200" r="26" fill="#0f172a"/>
+      <circle cx="295" cy="200" r="12" fill="#94a3b8"/>
+      <circle cx="295" cy="200" r="5" fill="#f8fafc"/>
+    </g>
+  </g>
+</svg>

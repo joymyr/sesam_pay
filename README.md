@@ -19,6 +19,15 @@ Betaler du derimot direkte på [sesam-sesam.com](https://sesam-sesam.com/) innen
   - **Betingelser:** *Har/Har ikke ubetalt parkering*, *Minst ett/Ingen kjøretøy har ubetalt parkering*.
   - **Handlinger:** *Sjekk ubetalte parkeringer nå*, *Sjekk alle kjøretøy nå*, *Send betalingsvarsel til Tidslinjen*.
 
+### 💬 Anbefaling for varsling (Slack / E-post)
+Homeys innebygde push-varsler støtter dessverre ikke klikkbare lenker. For den smidigste opplevelsen anbefales det derfor å sende varsler via **Slack** (eller e-post) i Flow.
+Appen har en egen tagg **«Ferdig formatert varseltekst»** (samt **«Betalingslenke»**) som gir en direkte, klikkbar betalingslenke rett i meldingen!
+
+---
+
+### 🌐 Forum og tilbakemeldinger
+Still spørsmål, diskuter eller gi tilbakemeldinger i tråden på [Homey Community Forum](https://community.homey.app/t/app-pro-test-sesam-pay/159405).
+
 ---
 
 ### ⚠️ Ansvarsfraskrivelse (Disclaimer)

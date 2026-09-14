@@ -13,5 +13,8 @@
   },
   "1.0.4": {
     "en": "Localized plain text README, improved Flow card titles and hints, and updated store banner images"
+  },
+  "1.0.5": {
+    "en": "Fixed edge-to-edge rendering for App Store banner images"
   }
 }

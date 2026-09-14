@@ -26,8 +26,8 @@
   <defs>
     <!-- Background Gradient (Edge-to-Edge) -->
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e293b"/>
-      <stop offset="40%" stop-color="#1e40af"/>
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="45%" stop-color="#1e40af"/>
       <stop offset="100%" stop-color="#2563eb"/>
     </linearGradient>
 
@@ -73,21 +73,26 @@
 
   <!-- 4. Upper Graphic Elements (Parking 'P' and Payment Waves) -->
   <g filter="url(#softShadow)">
-    <!-- Parking 'P' Badge -->
-    <g transform="translate(365, 80)">
-      <circle cx="0" cy="0" r="42" fill="#ffffff"/>
-      <path d="M -12 -22 H 6 C 18 -22 25 -15 25 -5 C 25 5 18 12 6 12 H -2 V 24 H -12 Z M -2 -13 V 3 H 6 C 11 3 15 -1 15 -5 C 15 -9 11 -13 6 -13 Z" fill="#2563eb"/>
+    <!-- Parking 'P' Badge (Top Right) -->
+    <g transform="translate(370, 75)">
+      <circle cx="0" cy="0" r="38" fill="#ffffff"/>
+      <path d="M -11 -20 H 5 C 16 -20 22 -14 22 -5 C 22 4 16 10 5 10 H -2 V 21 H -11 Z M -2 -12 V 2 H 5 C 10 2 13 -1 13 -5 C 13 -9 10 -12 5 -12 Z" fill="#2563eb"/>
     </g>
 
-    <!-- Contactless Payment Waves -->
-    <g transform="translate(130, 95)">
-      <path d="M -25 20 A 45 45 0 0 1 20 -25" fill="none" stroke="#93c5fd" stroke-width="8" stroke-linecap="round"/>
-      <path d="M -12 30 A 28 28 0 0 1 15 2" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
-      <circle cx="0" cy="22" r="4" fill="#ffffff"/>
+    <!-- Perfectly Concentric Contactless Payment Waves (Top Left) -->
+    <g transform="translate(135, 110)">
+      <!-- Outer Arc -->
+      <path d="M -48 0 A 48 48 0 0 1 0 -48" fill="none" stroke="#93c5fd" stroke-width="7" stroke-linecap="round"/>
+      <!-- Middle Arc -->
+      <path d="M -32 0 A 32 32 0 0 1 0 -32" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+      <!-- Inner Arc -->
+      <path d="M -18 0 A 18 18 0 0 1 0 -18" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      <!-- Center Dot -->
+      <circle cx="0" cy="0" r="4" fill="#ffffff"/>
     </g>
   </g>
 
-  <!-- 5. Main Car Illustration (Vertically and Horizontally Balanced) -->
+  <!-- 5. Main Car Illustration (Cleanly spaced below top badges) -->
   <g transform="translate(60, 95)" filter="url(#softShadow)">
     <!-- Car Silhouette -->
     <path d="M 35 170

@@ -19,5 +19,8 @@
   },
   "1.0.6": {
     "en": "Refined app and driver icons for better rendering and aligned banner graphics"
+  },
+  "1.0.7": {
+    "en": "Fix SVG icon syntax for Flow card and app icon rendering"
   }
 }

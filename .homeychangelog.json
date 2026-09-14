@@ -16,5 +16,8 @@
   },
   "1.0.5": {
     "en": "Fixed edge-to-edge rendering for App Store banner images"
+  },
+  "1.0.6": {
+    "en": "Refined app and driver icons for better rendering and aligned banner graphics"
   }
 }

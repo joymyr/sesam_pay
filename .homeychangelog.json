@@ -10,5 +10,8 @@
   },
   "1.0.3": {
     "en": "Updated description"
+  },
+  "1.0.4": {
+    "en": "Localized plain text README, improved Flow card titles and hints, and updated store banner images"
   }
 }

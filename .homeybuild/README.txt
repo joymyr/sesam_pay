@@ -1,31 +1,20 @@
-# Sesam Pay for Homey Pro 🚗🅿️
+Sesam Pay for Homey Pro
 
-Spar penger på parkering! Unngå 15 % servicetillegg på Sesam Sesam og EasyPark ved å betale direkte på sesam-sesam.com – helt automatisk overvåket av ditt smarthus.
+Avoid parking service fees! Save money on parking by paying directly on sesam-sesam.com within 48 hours instead of using automatic app charging.
 
-### 💰 Hvorfor Sesam Pay?
-Ved automatisk trekk i parkeringsapper legges det nå til et servicetillegg på 15 % (5–50 kr) per parkering på anlegg med automatisk skiltgjenkjenning (ANPR).
+Why Sesam Pay?
+Parking apps like Sesam Sesam and EasyPark charge a service fee (typically 15%, between 5 and 50 NOK) per parking session on camera-based parking facilities (ANPR).
+If you disable automatic app payment and pay directly on the website within 48 hours after leaving the facility, you avoid the service fee completely. The challenge is remembering the 48-hour deadline before late payment fees apply.
 
-Betaler du derimot på nettsiden sesam-sesam.com innen 48 timer etter utkjøring, slipper du servicetillegget helt! Utfordringen er å huske 48-timersfristen før det påløper fakturagebyr.
+What does the app do?
+- Automatic monitoring: Regularly checks if any of your registered vehicles have unpaid parking sessions.
+- Early notifications: Receive notifications on your timeline, phone, Slack, or email as soon as a new parking session is detected.
+- Deadline warnings: Get a reminder when less than 12 hours remain before the 48-hour payment deadline expires.
+- Easy payment: Copy the direct payment link to complete payment with BankID in your browser, then verify the payment directly in Homey.
+- Rich Flow cards: Create automated flows based on new parking sessions, amounts, remaining time, and completed payments.
 
-### ✨ Hva gjør appen?
-* **Automatisk overvåking:** Sjekker jevnlig om dine registrerte kjøretøy har utestående parkeringer.
-* **Tidlige varsler:** Få varsel på tidslinjen, mobil, Slack eller e-post så snart du har parkert.
-* **Fristpåminnelse:** Gir deg en ekstra påminnelse når det er under 12 timer igjen av betalingsfristen.
-* **Enkel betaling:** Få direkte betalingslenke levert i varselet, eller kopier den rett fra enhetskortet i Homey for trygg betaling med BankID i nettleseren.
-* **Flow-støtte:** Bygg dine egne automatiseringer basert på nye parkeringer, beløp, gjenværende tid og oppgjorte betalinger.
+Notification tip (Slack / Email)
+Homey standard push notifications do not support clickable links. For the best experience, sending notifications via Slack or email in your flows is recommended, where direct payment links can be clicked immediately.
 
-### 💬 Anbefaling for varsling (Slack / E-post)
-Homeys innebygde push-varsler støtter dessverre ikke klikkbare lenker. For den smidigste opplevelsen anbefales det derfor å sende varsler via **Slack** (eller e-post) i Flow.
-Appen har en egen tagg **«Ferdig formatert varseltekst»** (samt **«Betalingslenke»**) som gir deg en direkte, klikkbar betalingslenke rett i meldingen!
-
----
-
-### 🌐 Forum og tilbakemeldinger
-Still spørsmål, diskuter eller gi tilbakemeldinger i tråden på Homey Community Forum:
-https://community.homey.app/t/app-pro-test-sesam-pay/159405
-
----
-
-### ⚠️ Ansvarsfraskrivelse (Disclaimer)
-Dette er en **uoffisiell** app utviklet uavhengig for Homey, og er ikke tilknyttet, sponset eller godkjent av Hi Tech Mobility AS, Sesam Sesam, EasyPark eller Bergen Parkering.
-Alle varemerker og logoer tilhører sine respektive eiere.
+Disclaimer
+This is an unofficial app developed independently for Homey, and is not affiliated with, sponsored by, or endorsed by Hi Tech Mobility AS, Sesam Sesam, EasyPark, or Bergen Parkering. All trademarks belong to their respective owners.

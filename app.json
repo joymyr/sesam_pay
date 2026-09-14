@@ -196,7 +196,11 @@
         "id": "unpaid_parking_found",
         "title": {
           "en": "Unpaid parking detected",
-          "no": "Ny ubetalt parkering oppdaget"
+          "no": "Ubetalt parkering oppdaget"
+        },
+        "hint": {
+          "en": "Triggers when a new unpaid parking is detected for this vehicle.",
+          "no": "Utløses når en ny ubetalt parkering oppdages for dette kjøretøyet."
         },
         "tokens": [
           {
@@ -283,8 +287,12 @@
       {
         "id": "deadline_approaching",
         "title": {
-          "en": "Payment deadline is approaching (< 12h)",
-          "no": "Betalingsfrist utløper snart (< 12t)"
+          "en": "Payment deadline is approaching",
+          "no": "Betalingsfristen utløper snart"
+        },
+        "hint": {
+          "en": "Triggers when less than 12 hours remain of the 48-hour payment deadline.",
+          "no": "Utløses når det er under 12 timer igjen av betalingsfristen på 48 timer."
         },
         "tokens": [
           {
@@ -363,7 +371,11 @@
         "id": "parking_paid",
         "title": {
           "en": "Parking has been paid",
-          "no": "Parkering er betalt/oppgjort"
+          "no": "Parkering er betalt"
+        },
+        "hint": {
+          "en": "Triggers when a parking is paid or settled for this vehicle.",
+          "no": "Utløses når en parkering er betalt eller oppgjort for dette kjøretøyet."
         },
         "tokens": [
           {
@@ -405,8 +417,12 @@
       {
         "id": "any_unpaid_parking_found",
         "title": {
-          "en": "Unpaid parking detected (any vehicle)",
-          "no": "Ubetalt parkering oppdaget (uansett bil)"
+          "en": "Unpaid parking detected",
+          "no": "Ubetalt parkering oppdaget"
+        },
+        "hint": {
+          "en": "Triggers when unpaid parking is detected for any vehicle.",
+          "no": "Utløses når en ubetalt parkering oppdages for et hvilket som helst kjøretøy."
         },
         "tokens": [
           {
@@ -495,8 +511,12 @@
       {
         "id": "any_deadline_approaching",
         "title": {
-          "en": "Payment deadline is approaching (< 12h, any vehicle)",
-          "no": "Betalingsfrist utløper snart (< 12t, uansett bil)"
+          "en": "Payment deadline is approaching",
+          "no": "Betalingsfristen utløper snart"
+        },
+        "hint": {
+          "en": "Triggers when less than 12 hours remain of the payment deadline for any vehicle.",
+          "no": "Utløses når det er under 12 timer igjen av betalingsfristen for et hvilket som helst kjøretøy."
         },
         "tokens": [
           {
@@ -576,8 +596,12 @@
       {
         "id": "any_parking_paid",
         "title": {
-          "en": "Parking has been paid (any vehicle)",
-          "no": "Parkering er betalt/oppgjort (uansett bil)"
+          "en": "Parking has been paid",
+          "no": "Parkering er betalt"
+        },
+        "hint": {
+          "en": "Triggers when a parking is paid or settled for any vehicle.",
+          "no": "Utløses når en parkering er betalt eller oppgjort for et hvilket som helst kjøretøy."
         },
         "tokens": [
           {
@@ -650,6 +674,10 @@
           "en": "Check unpaid parkings now",
           "no": "Sjekk ubetalte parkeringer nå"
         },
+        "hint": {
+          "en": "Checks this vehicle for unpaid parkings immediately.",
+          "no": "Sjekker dette kjøretøyet for ubetalte parkeringer umiddelbart."
+        },
         "args": [
           {
             "name": "device",
@@ -661,8 +689,12 @@
       {
         "id": "check_all_vehicles_now",
         "title": {
-          "en": "Check all vehicles for unpaid parking now",
-          "no": "Sjekk alle kjøretøy for ubetalt parkering nå"
+          "en": "Check all vehicles now",
+          "no": "Sjekk alle kjøretøy nå"
+        },
+        "hint": {
+          "en": "Checks all registered vehicles for unpaid parkings immediately.",
+          "no": "Sjekker alle registrerte kjøretøy for ubetalte parkeringer umiddelbart."
         },
         "args": []
       },

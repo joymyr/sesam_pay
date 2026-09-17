@@ -25,6 +25,8 @@
   },
   "1.0.8": {
     "en": "Update store banner and app icon, rewrite README as plain text without headers, and add full pairing and settings localization"
+  },
+  "1.0.9": {
+    "en": "update vehicle device images based on real car photo"
   }
 }
-

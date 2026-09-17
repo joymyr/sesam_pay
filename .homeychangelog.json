@@ -22,5 +22,9 @@
   },
   "1.0.7": {
     "en": "Fix SVG icon syntax for Flow card and app icon rendering"
+  },
+  "1.0.8": {
+    "en": "Update store banner and app icon, rewrite README as plain text without headers, and add full pairing and settings localization"
   }
 }
+

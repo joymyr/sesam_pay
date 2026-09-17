@@ -1,15 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Clean monochrome white vector artwork with true transparency for Homey App Icon -->
+  <defs>
+    <mask id="slash-gap">
+      <rect x="0" y="0" width="512" height="512" fill="#ffffff"/>
+      <!-- Black stroke cuts out negative space around the diagonal slash -->
+      <line x1="290" y1="430" x2="430" y2="290" stroke="#000000" stroke-width="30" stroke-linecap="round"/>
+    </mask>
+  </defs>
+
   <g fill="#ffffff">
-    <!-- 1. Concentric Contactless Waves (Upper Left) -->
-    <path d="M 120 185 A 64 64 0 0 1 210 95" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
-    <path d="M 140 185 A 44 44 0 0 1 202 123" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
-    <path d="M 160 185 A 24 24 0 0 1 194 151" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
-    <circle cx="185" cy="185" r="7"/>
+    <!-- 1. Parking P (Top-Left weighted) -->
+    <path fill-rule="evenodd" d="M 85 70 H 245 C 315 70 355 110 355 180 C 355 250 315 290 245 290 H 160 V 442 H 85 Z M 160 140 V 220 H 240 C 268 220 285 205 285 180 C 285 155 268 140 240 140 Z"/>
 
-    <!-- 2. Parking 'P' Badge (Upper Right) -->
-    <path fill-rule="evenodd" d="M 345 80 C 382 80 412 110 412 147 C 412 184 382 214 345 214 C 308 214 278 184 278 147 C 278 110 308 80 345 80 Z M 324 112 L 324 182 L 338 182 L 338 156 L 350 156 C 364 156 374 146 374 134 C 374 122 364 112 350 112 L 324 112 Z M 338 124 L 348 124 C 355 124 360 128 360 134 C 360 140 355 144 348 144 L 338 144 L 338 124 Z"/>
+    <!-- 2. +15% with masked cutout behind slash -->
+    <g mask="url(#slash-gap)">
+      <!-- Ring -->
+      <path fill-rule="evenodd" d="M 360 360 m -100 0 a 100 100 0 1 0 200 0 a 100 100 0 1 0 -200 0 Z M 360 360 m -78 0 a 78 78 0 1 1 156 0 a 78 78 0 1 1 -156 0 Z"/>
+      <!-- +15% Text -->
+      <text x="360" y="380" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', Roboto, 'Segoe UI', sans-serif" font-size="58" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="-2">+15%</text>
+    </g>
 
-    <!-- 3. Car Silhouette (Lower Half, cleanly spaced) -->
-    <path fill-rule="evenodd" d="M 75 365 L 80 330 C 84 316 95 304 109 300 L 165 290 C 184 254 218 230 260 228 L 350 228 C 382 228 410 248 424 276 L 448 304 C 460 312 468 325 468 340 L 468 370 C 468 378 462 384 454 384 L 432 384 C 428 418 398 444 362 444 C 326 444 296 418 292 384 L 204 384 C 200 418 170 444 134 444 C 98 444 68 418 64 384 L 48 384 C 40 384 34 378 34 370 L 34 360 C 34 352 40 346 48 346 L 75 346 Z M 172 288 L 252 288 L 252 246 L 230 246 C 202 246 182 265 172 288 Z M 272 246 L 272 288 L 392 288 L 366 254 C 358 249 348 246 338 246 Z M 134 370 A 22 22 0 1 0 134 414 A 22 22 0 1 0 134 370 Z M 362 370 A 22 22 0 1 0 362 414 A 22 22 0 1 0 362 370 Z"/>
+    <!-- 3. Diagonal Prohibition Slash -->
+    <line x1="290" y1="430" x2="430" y2="290" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/>
   </g>
 </svg>
+

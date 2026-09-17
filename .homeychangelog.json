@@ -28,5 +28,8 @@
   },
   "1.0.9": {
     "en": "update vehicle device images based on real car photo"
+  },
+  "1.0.10": {
+    "en": "Fixed white background and added padding to driver images"
   }
 }

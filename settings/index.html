@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sesam Pay Oversikt</title>
+  <title id="page-title">Sesam Pay Overview</title>
   <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
   <style>
     * {
@@ -173,43 +173,105 @@
   <div class="header">
     <h1>🚗 Sesam Pay</h1>
     <button class="refresh-btn" onclick="loadStatus()">
-      <span>⟳</span> Oppdater
+      <span>⟳</span> <span id="btn-refresh-text">Refresh</span>
     </button>
   </div>
 
   <div id="container">
-    <div class="loader">Henter kjøretøy og status...</div>
+    <div class="loader" id="init-loader">Fetching vehicles and status...</div>
   </div>
 
   <script>
+    const I18N = {
+      en: {
+        title: "Sesam Pay Overview",
+        btn_refresh: "Refresh",
+        loading: "Fetching vehicles and status...",
+        connecting: "Connecting to Homey...",
+        error_fetch: "Error fetching status",
+        empty_title: "No vehicles added yet.",
+        empty_desc: "Go to <strong>Devices -> Add new device -> Sesam Pay</strong> to add your vehicle.",
+        badge_unpaid: "● Unpaid parking",
+        badge_paid: "✓ No unpaid sessions",
+        facility: "Location / Facility",
+        unpaid_amount: "Unpaid amount",
+        remaining_time: "Remaining time",
+        hours: "hours",
+        deadline_unknown: "Deadline unknown",
+        btn_pay: "💳 Pay fee-free ({amount} kr) ↗",
+        btn_copy_settings: "📋 Copy payment link (for Safari/Chrome)",
+        btn_copied_settings: "✓ Link copied! Open in Safari/Chrome",
+        all_settled_desc: "All settled. The app automatically monitors new entries and exits.",
+        btn_check_now: "⟳ Check now"
+      },
+      no: {
+        title: "Sesam Pay Oversikt",
+        btn_refresh: "Oppdater",
+        loading: "Henter kjøretøy og status...",
+        connecting: "Kobler til Homey...",
+        error_fetch: "Feil ved henting av status",
+        empty_title: "Ingen kjøretøy lagt til ennå.",
+        empty_desc: "Gå til <strong>Enheter -> Legg til ny enhet -> Sesam Pay</strong> for å legge til bilen din.",
+        badge_unpaid: "● Ubetalt parkering",
+        badge_paid: "✓ Ingen ubetalte",
+        facility: "Sted / Anlegg",
+        unpaid_amount: "Utestående beløp",
+        remaining_time: "Gjenstående tid",
+        hours: "timer",
+        deadline_unknown: "Frist ukjent",
+        btn_pay: "💳 Betal gebyrfritt ({amount} kr) ↗",
+        btn_copy_settings: "📋 Kopier betalingslenke (til Safari/Chrome)",
+        btn_copied_settings: "✓ Lenke kopiert! Åpne i Safari/Chrome",
+        all_settled_desc: "Alt er oppgjort. Appen overvåker automatisk nye inn- og utkjøringer.",
+        btn_check_now: "⟳ Sjekk nå"
+      }
+    };
+
+    function getLang() {
+      const h = homeyInstance || window.Homey;
+      const lang = (h && (typeof h.getLanguage === 'function' ? h.getLanguage() : h.language)) || navigator.language || 'en';
+      return lang.startsWith('no') || lang.startsWith('nb') || lang.startsWith('nn') ? 'no' : 'en';
+    }
+
     let homeyInstance = null;
 
     function onHomeyReady(Homey) {
       homeyInstance = Homey;
       Homey.ready();
+      applyHeaderTranslations();
       loadStatus();
     }
 
+    function applyHeaderTranslations() {
+      const t = I18N[getLang()];
+      document.title = t.title;
+      const refText = document.getElementById('btn-refresh-text');
+      if (refText) refText.textContent = t.btn_refresh;
+      const initLoader = document.getElementById('init-loader');
+      if (initLoader) initLoader.textContent = t.loading;
+    }
+
     function loadStatus() {
+      const t = I18N[getLang()];
       const container = document.getElementById('container');
       const h = homeyInstance || window.Homey;
 
       if (!h || typeof h.api !== 'function') {
-        container.innerHTML = '<div class="loader">Kobler til Homey...</div>';
+        container.innerHTML = `<div class="loader">${t.connecting}</div>`;
         return;
       }
 
       h.api('GET', '/status', function(err, vehicles) {
         if (err) {
-          container.innerHTML = `<div class="empty-state">Feil ved henting av status: ${err.message || JSON.stringify(err)}</div>`;
+          container.innerHTML = `<div class="empty-state">${t.error_fetch}: ${err.message || JSON.stringify(err)}</div>`;
           return;
         }
 
         if (!vehicles || vehicles.length === 0) {
           container.innerHTML = `
             <div class="empty-state">
-              <p>Ingen kjøretøy lagt til ennå.</p>
-              <p style="font-size: 13px; margin-top: 8px;">Gå til <strong>Enheter -> Legg til ny enhet -> Sesam Pay</strong> for å legge til bilen din.</p>
+              <p>${t.empty_title}</p>
+              <p style="font-size: 13px; margin-top: 8px;">${t.empty_desc}</p>
             </div>
           `;
           return;
@@ -220,6 +282,7 @@
     }
 
     function renderVehicles(vehicles) {
+      const t = I18N[getLang()];
       const container = document.getElementById('container');
       let html = '';
 
@@ -227,7 +290,7 @@
         const isUnpaid = v.hasUnpaid;
         const cardClass = isUnpaid ? 'has-unpaid' : 'ok';
         const badgeClass = isUnpaid ? 'unpaid' : 'paid';
-        const badgeText = isUnpaid ? '● Ubetalt parkering' : '✓ Ingen ubetalte';
+        const badgeText = isUnpaid ? t.badge_unpaid : t.badge_paid;
 
         html += `
           <div class="vehicle-card ${cardClass}">
@@ -241,42 +304,43 @@
         `;
 
         if (isUnpaid) {
-          const hoursLeft = v.hoursRemaining !== undefined ? `${v.hoursRemaining} timer` : 'Frist ukjent';
+          const hoursLeft = v.hoursRemaining !== undefined ? `${v.hoursRemaining} ${t.hours}` : t.deadline_unknown;
           const targetUrl = v.paymentUrl || 'https://sesam-sesam.com/betal-for-parkering/';
+          const payText = t.btn_pay.replace('{amount}', v.amount);
 
           html += `
             <div class="parking-details">
               <div class="detail-row">
-                <span class="detail-label">Sted / Anlegg</span>
+                <span class="detail-label">${t.facility}</span>
                 <span class="detail-value">${escapeHtml(v.facility)}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Utestående beløp</span>
+                <span class="detail-label">${t.unpaid_amount}</span>
                 <span class="detail-value" style="color: #b91c1c;">${v.amount} NOK</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Gjenstående tid</span>
+                <span class="detail-label">${t.remaining_time}</span>
                 <span class="detail-value">${hoursLeft}</span>
               </div>
             </div>
 
             <a href="${targetUrl}" target="_blank" class="pay-btn" onclick="openPayment('${targetUrl}', event)">
-              💳 Betal gebyrfritt (${v.amount} kr) ↗
+              ${payText}
             </a>
             <button class="sync-single-btn" style="width:100%; margin-top:8px; padding:10px;" onclick="copySettingsUrl('${targetUrl}', this)">
-              📋 Kopier betalingslenke (til Safari/Chrome)
+              ${t.btn_copy_settings}
             </button>
           `;
         } else {
           html += `
             <p style="color: #64748b; font-size: 13px; margin-top: 8px;">
-              Alt er oppgjort. Appen overvåker automatisk nye inn- og utkjøringer.
+              ${t.all_settled_desc}
             </p>
           `;
         }
 
         html += `
-            <button class="sync-single-btn" onclick="syncVehicle('${v.id}')">⟳ Sjekk nå</button>
+            <button class="sync-single-btn" onclick="syncVehicle('${v.id}')">${t.btn_check_now}</button>
           </div>
         `;
       });
@@ -285,6 +349,7 @@
     }
 
     function copySettingsUrl(url, btn) {
+      const t = I18N[getLang()];
       if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
         navigator.clipboard.writeText(url).then(() => showSettingsCopied(btn));
       } else {
@@ -299,9 +364,10 @@
     }
 
     function showSettingsCopied(btn) {
+      const t = I18N[getLang()];
       if (btn) {
         const orig = btn.innerText;
-        btn.innerText = '✓ Lenke kopiert! Åpne i Safari/Chrome';
+        btn.innerText = t.btn_copied_settings;
         btn.style.background = '#d1fae5';
         setTimeout(() => {
           btn.innerText = orig;
@@ -319,8 +385,9 @@
     }
 
     function syncVehicle(vehicleId) {
+      const t = I18N[getLang()];
       const container = document.getElementById('container');
-      container.innerHTML = '<div class="loader">Sjekker Sesam Sesam...</div>';
+      container.innerHTML = `<div class="loader">${t.loading}</div>`;
 
       const h = homeyInstance || window.Homey;
       if (!h || typeof h.api !== 'function') return;

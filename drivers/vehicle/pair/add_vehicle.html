@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Legg til kjøretøy</title>
+  <title id="page-title">Add Vehicle</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -57,33 +57,93 @@
 </head>
 <body>
   <div class="form-group">
-    <label for="name">Navn på kjøretøy</label>
-    <input type="text" id="name" placeholder="F.eks. Min Tesla eller VW Golf" />
-    <div class="hint">Valgfritt visningsnavn i Homey</div>
+    <label for="name" id="lbl-name">Vehicle Name</label>
+    <input type="text" id="name" placeholder="e.g. My Tesla or VW Golf" />
+    <div class="hint" id="hint-name">Optional display name in Homey</div>
   </div>
 
   <div class="form-group">
-    <label for="regNumber">Registreringsnummer *</label>
-    <input type="text" id="regNumber" placeholder="F.eks. AB12345" style="text-transform: uppercase;" required />
-    <div class="hint">Norsk eller utenlandsk kjennetegn</div>
+    <label for="regNumber" id="lbl-reg">Registration Number *</label>
+    <input type="text" id="regNumber" placeholder="e.g. AB12345" style="text-transform: uppercase;" required />
+    <div class="hint" id="hint-reg">Norwegian or foreign license plate</div>
   </div>
 
   <div class="form-group">
-    <label for="pollInterval">Sjekkintervall (minutter)</label>
+    <label for="pollInterval" id="lbl-poll">Check Interval (minutes)</label>
     <input type="number" id="pollInterval" value="30" min="5" max="1440" />
-    <div class="hint">Hvor ofte appen sjekker etter nye ubetalte parkeringer</div>
+    <div class="hint" id="hint-poll">How often the app checks for unpaid parking sessions</div>
   </div>
 
   <div class="form-group">
-    <label for="email">E-post for kvittering (valgfritt)</label>
-    <input type="email" id="email" placeholder="din@epost.no" />
+    <label for="email" id="lbl-email">Email for receipt (optional)</label>
+    <input type="email" id="email" placeholder="you@email.com" />
   </div>
 
   <div id="error" class="error"></div>
-  <button id="submitBtn" class="btn" onclick="saveVehicle()">Legg til kjøretøy</button>
+  <button id="submitBtn" class="btn" onclick="saveVehicle()">Add Vehicle</button>
 
   <script>
+    const I18N = {
+      en: {
+        title: "Add Vehicle",
+        name_label: "Vehicle Name",
+        name_ph: "e.g. My Tesla or VW Golf",
+        name_hint: "Optional display name in Homey",
+        reg_label: "Registration Number *",
+        reg_ph: "e.g. AB12345",
+        reg_hint: "Norwegian or foreign license plate",
+        poll_label: "Check Interval (minutes)",
+        poll_hint: "How often the app checks for unpaid parking sessions",
+        email_label: "Email for receipt (optional)",
+        email_ph: "you@email.com",
+        btn_add: "Add Vehicle",
+        btn_checking: "Checking Sesam Sesam...",
+        err_invalid_reg: "Please enter a valid registration number."
+      },
+      no: {
+        title: "Legg til kjøretøy",
+        name_label: "Navn på kjøretøy",
+        name_ph: "F.eks. Min Tesla eller VW Golf",
+        name_hint: "Valgfritt visningsnavn i Homey",
+        reg_label: "Registreringsnummer *",
+        reg_ph: "F.eks. AB12345",
+        reg_hint: "Norsk eller utenlandsk kjennetegn",
+        poll_label: "Sjekkintervall (minutter)",
+        poll_hint: "Hvor ofte appen sjekker etter nye ubetalte parkeringer",
+        email_label: "E-post for kvittering (valgfritt)",
+        email_ph: "din@epost.no",
+        btn_add: "Legg til kjøretøy",
+        btn_checking: "Sjekker Sesam Sesam...",
+        err_invalid_reg: "Vennligst oppgi et gyldig registreringsnummer."
+      }
+    };
+
+    function getLang() {
+      const h = window.Homey;
+      const lang = (h && (typeof h.getLanguage === 'function' ? h.getLanguage() : h.language)) || navigator.language || 'en';
+      return lang.startsWith('no') || lang.startsWith('nb') || lang.startsWith('nn') ? 'no' : 'en';
+    }
+
+    function applyTranslations() {
+      const t = I18N[getLang()];
+      document.title = t.title;
+      document.getElementById('lbl-name').textContent = t.name_label;
+      document.getElementById('name').placeholder = t.name_ph;
+      document.getElementById('hint-name').textContent = t.name_hint;
+      document.getElementById('lbl-reg').textContent = t.reg_label;
+      document.getElementById('regNumber').placeholder = t.reg_ph;
+      document.getElementById('hint-reg').textContent = t.reg_hint;
+      document.getElementById('lbl-poll').textContent = t.poll_label;
+      document.getElementById('hint-poll').textContent = t.poll_hint;
+      document.getElementById('lbl-email').textContent = t.email_label;
+      document.getElementById('email').placeholder = t.email_ph;
+      document.getElementById('submitBtn').textContent = t.btn_add;
+    }
+
+    applyTranslations();
+
     function saveVehicle() {
+      const t = I18N[getLang()];
       const nameInput = document.getElementById('name');
       const regInput = document.getElementById('regNumber');
       const pollInput = document.getElementById('pollInterval');
@@ -93,14 +153,14 @@
 
       const regNumber = regInput.value.trim().toUpperCase();
       if (!regNumber || regNumber.length < 2) {
-        errorDiv.textContent = 'Vennligst oppgi et gyldig registreringsnummer.';
+        errorDiv.textContent = t.err_invalid_reg;
         errorDiv.style.display = 'block';
         return;
       }
 
       errorDiv.style.display = 'none';
       btn.disabled = true;
-      btn.textContent = 'Sjekker Sesam Sesam...';
+      btn.textContent = t.btn_checking;
 
       Homey.emit('add_vehicle', {
         name: nameInput.value.trim() || regNumber,
@@ -110,7 +170,7 @@
       }, function(err, device) {
         if (err) {
           btn.disabled = false;
-          btn.textContent = 'Legg til kjøretøy';
+          btn.textContent = t.btn_add;
           errorDiv.textContent = err.message || err.toString();
           errorDiv.style.display = 'block';
           return;
@@ -119,7 +179,7 @@
         Homey.createDevice(device, function(err) {
           if (err) {
             btn.disabled = false;
-            btn.textContent = 'Legg til kjøretøy';
+            btn.textContent = t.btn_add;
             errorDiv.textContent = err.message || err.toString();
             errorDiv.style.display = 'block';
             return;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Betal parkering</title>
+  <title>Parking Payment</title>
   <style>
     * {
       box-sizing: border-box;
@@ -197,13 +197,67 @@
 <body>
 
   <div id="content">
-    <div class="loader">Henter parkeringsstatus...</div>
+    <div class="loader" id="init-loader">Fetching parking status...</div>
   </div>
 
   <script>
+    const I18N = {
+      en: {
+        loading: "Fetching parking status...",
+        checking: "⏳ Checking with Sesam Sesam...",
+        fetching_status: "Fetching updated payment status.",
+        no_status: "No parking status found.",
+        unpaid_found: "● Unpaid parking detected",
+        vehicle: "Vehicle",
+        facility: "Location",
+        amount: "Amount",
+        remaining_time: "Remaining time",
+        hours: "hours",
+        btn_copy: "📋 Copy payment link",
+        btn_copied: "✓ Payment link copied!",
+        btn_paid: "✓ I have paid (check confirmation)",
+        tip: "💡 <strong>Tip:</strong> Tap «Copy payment link» and open in Chrome or Safari to complete payment with BankID. Then tap <strong>«I have paid»</strong> below to update Homey.",
+        btn_close: "Close",
+        all_settled: "All settled!",
+        no_unpaid: "No unpaid parking sessions",
+        paid_msg: "Parking for <strong>{name}</strong> ({regNumber}) is confirmed paid.",
+        btn_done: "Done"
+      },
+      no: {
+        loading: "Henter parkeringsstatus...",
+        checking: "⏳ Sjekker med Sesam Sesam...",
+        fetching_status: "Henter oppdatert betalingsstatus.",
+        no_status: "Ingen parkeringsstatus funnet.",
+        unpaid_found: "● Ubetalt parkering funnet",
+        vehicle: "Kjøretøy",
+        facility: "Sted",
+        amount: "Beløp",
+        remaining_time: "Gjenstående tid",
+        hours: "timer",
+        btn_copy: "📋 Kopier betalingslenke",
+        btn_copied: "✓ Betalingslenke kopiert!",
+        btn_paid: "✓ Jeg har betalt (sjekk bekreftelse)",
+        tip: "💡 <strong>Tips:</strong> Trykk «Kopier betalingslenke» og åpne i Chrome eller Safari for å fullføre betalingen med BankID. Trykk deretter <strong>«Jeg har betalt»</strong> under for å oppdatere Homey.",
+        btn_close: "Lukk",
+        all_settled: "Alt er oppgjort!",
+        no_unpaid: "Ingen ubetalte parkeringer",
+        paid_msg: "Parkeringen for <strong>{name}</strong> ({regNumber}) er bekreftet betalt.",
+        btn_done: "Ferdig"
+      }
+    };
+
+    function getLang() {
+      const h = window.Homey;
+      const lang = (h && (typeof h.getLanguage === 'function' ? h.getLanguage() : h.language)) || navigator.language || 'en';
+      return lang.startsWith('no') || lang.startsWith('nb') || lang.startsWith('nn') ? 'no' : 'en';
+    }
+
     let currentStatus = null;
 
     function init() {
+      const t = I18N[getLang()];
+      const initLoader = document.getElementById('init-loader');
+      if (initLoader) initLoader.textContent = t.loading;
       fetchStatus(false);
     }
 
@@ -244,11 +298,12 @@
     }
 
     function verifyPayment() {
+      const t = I18N[getLang()];
       const c = document.getElementById('content');
       c.innerHTML = `
         <div class="card" style="text-align:center; padding: 24px;">
-          <div class="loader">⏳ Sjekker med Sesam Sesam...</div>
-          <p style="font-size:13px; color:#64748b; margin-top:8px;">Henter oppdatert betalingsstatus.</p>
+          <div class="loader">${t.checking}</div>
+          <p style="font-size:13px; color:#64748b; margin-top:8px;">${t.fetching_status}</p>
         </div>
       `;
 
@@ -256,46 +311,51 @@
     }
 
     function renderStatus(status) {
+      const t = I18N[getLang()];
       const c = document.getElementById('content');
       if (!status) {
-        c.innerHTML = '<p style="color:#ef4444; padding:20px; text-align:center;">Ingen parkeringsstatus funnet.</p>';
+        c.innerHTML = `<p style="color:#ef4444; padding:20px; text-align:center;">${t.no_status}</p>`;
         return;
       }
 
       if (status.hasUnpaid) {
         c.innerHTML = `
           <div class="card">
-            <span class="badge unpaid">● Ubetalt parkering funnet</span>
-            <div class="row"><span class="label">Kjøretøy</span><span class="val">${escapeHtml(status.name)} (${escapeHtml(status.regNumber)})</span></div>
-            <div class="row"><span class="label">Sted</span><span class="val">${escapeHtml(status.facility)}</span></div>
-            <div class="row"><span class="label">Beløp</span><span class="val" style="color:#ef4444; font-size:16px; font-weight:700;">${status.amount} NOK</span></div>
-            <div class="row"><span class="label">Gjenstående tid</span><span class="val">${status.hoursRemaining} timer</span></div>
+            <span class="badge unpaid">${t.unpaid_found}</span>
+            <div class="row"><span class="label">${t.vehicle}</span><span class="val">${escapeHtml(status.name)} (${escapeHtml(status.regNumber)})</span></div>
+            <div class="row"><span class="label">${t.facility}</span><span class="val">${escapeHtml(status.facility)}</span></div>
+            <div class="row"><span class="label">${t.amount}</span><span class="val" style="color:#ef4444; font-size:16px; font-weight:700;">${status.amount} NOK</span></div>
+            <div class="row"><span class="label">${t.remaining_time}</span><span class="val">${status.hoursRemaining} ${t.hours}</span></div>
             
             <button id="btn-copy" class="btn-main-copy" onclick="copyUrl('${status.paymentUrl}')">
-              📋 Kopier betalingslenke
+              ${t.btn_copy}
             </button>
 
             <button class="btn-confirm" onclick="verifyPayment()">
-              ✓ Jeg har betalt (sjekk bekreftelse)
+              ${t.btn_paid}
             </button>
 
             <div class="tip-box">
-              💡 <strong>Tips:</strong> Trykk «Kopier betalingslenke» og åpne i Chrome eller Safari for å fullføre betalingen med BankID. Trykk deretter <strong>«Jeg har betalt»</strong> under for å oppdatere Homey.
+              ${t.tip}
             </div>
 
-            <button class="btn-close" onclick="closeView()">Lukk</button>
+            <button class="btn-close" onclick="closeView()">${t.btn_close}</button>
           </div>
         `;
       } else {
+        const paidText = t.paid_msg
+          .replace('{name}', escapeHtml(status.name))
+          .replace('{regNumber}', escapeHtml(status.regNumber));
+
         c.innerHTML = `
           <div class="card" style="text-align:center; padding: 24px 18px;">
             <div class="success-icon">✅</div>
-            <span class="badge paid">Alt er oppgjort!</span>
-            <h3 style="margin-top:12px; font-size:18px;">Ingen ubetalte parkeringer</h3>
+            <span class="badge paid">${t.all_settled}</span>
+            <h3 style="margin-top:12px; font-size:18px;">${t.no_unpaid}</h3>
             <p style="font-size:14px; color:#64748b; margin: 10px 0 18px 0;">
-              Parkeringen for <strong>${escapeHtml(status.name)}</strong> (${escapeHtml(status.regNumber)}) er bekreftet betalt.
+              ${paidText}
             </p>
-            <button class="btn-done-green" onclick="closeView()">Ferdig</button>
+            <button class="btn-done-green" onclick="closeView()">${t.btn_done}</button>
           </div>
         `;
       }
@@ -327,13 +387,14 @@
     }
 
     function showCopied() {
+      const t = I18N[getLang()];
       const btn = document.getElementById('btn-copy');
       if (btn) {
         btn.classList.add('copied');
-        btn.innerText = '✓ Betalingslenke kopiert!';
+        btn.innerText = t.btn_copied;
         setTimeout(() => {
           btn.classList.remove('copied');
-          btn.innerText = '📋 Kopier betalingslenke';
+          btn.innerText = t.btn_copy;
         }, 3500);
       }
     }

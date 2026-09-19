@@ -40,12 +40,20 @@ module.exports = {
   /**
    * Utfører en manuell sjekk for et spesifikt kjøretøy.
    */
-  async syncVehicle({ homey, body }: { homey: any; body: { id: string } }): Promise<any> {
+  async syncVehicle({ homey, body }: { homey: any; body?: { id?: any } }): Promise<any> {
+    if (!body || typeof body !== 'object' || typeof body.id !== 'string' || !body.id.trim()) {
+      throw new Error('Vennligst oppgi en gyldig kjøretøy-ID.');
+    }
+
     const driver = homey.drivers.getDriver('vehicle') as any;
     if (!driver) throw new Error('Driver ikke funnet');
 
     const devices = driver.getDevices() as any[];
     const device = devices.find(d => d.getData().id === body.id || d.id === body.id);
+    if (!device) {
+      throw new Error(`Kjøretøy med id "${body.id}" ble ikke funnet.`);
+    }
+
     const res = await device.syncUnpaidParking();
     return res;
   },
@@ -53,8 +61,9 @@ module.exports = {
   /**
    * Logger feilsøkingsmeldinger fra webviewet direkte til terminalen.
    */
-  async logMessage({ homey, body }: { homey: any; body: { message: string } }): Promise<any> {
-    homey.app.log(`[Webview] ${body.message}`);
+  async logMessage({ homey, body }: { homey: any; body?: { message?: any } }): Promise<any> {
+    const message = (body && typeof body.message === 'string') ? body.message : JSON.stringify(body || '');
+    homey.app.log(`[Webview] ${message}`);
     return { ok: true };
   },
 

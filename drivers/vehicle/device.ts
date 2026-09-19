@@ -130,7 +130,7 @@ module.exports = class VehicleDevice extends Homey.Device {
   /**
    * Formaterer et tidslinje-varsel (for Homey Timeline).
    */
-  public formatTimelineText(p: UnpaidParkingItem, paymentUrl: string): string {
+  public formatTimelineText(p: UnpaidParkingItem): string {
     const devName = this.getName();
     const deadlineStr = this.formatDateTime(p.deadline);
     const hours = p.hoursRemaining !== undefined ? `${p.hoursRemaining}t` : '48t';
@@ -175,7 +175,7 @@ module.exports = class VehicleDevice extends Homey.Device {
   /**
    * Formaterer et kort push-varsel.
    */
-  public formatPushText(p: UnpaidParkingItem, paymentUrl: string): string {
+  public formatPushText(p: UnpaidParkingItem): string {
     const devName = this.getName();
     return `🚗 ${devName}: Ubetalt parkering på ${p.facility} (${p.amount} kr, ${p.hoursRemaining ?? 48}t igjen). Åpne "${devName}" for å betale.`;
   }
@@ -195,7 +195,6 @@ module.exports = class VehicleDevice extends Homey.Device {
     const hoursStr = String(this.getCapabilityValue('sesam_hours_remaining') || '0 t');
     const parsedAmount = parseFloat(amountStr) || 0;
     const parsedHours = parseFloat(hoursStr) || 0;
-    const paymentUrl = this.currentPaymentUrl || 'https://sesam-sesam.com/betal-for-parkering/';
 
     const pseudoItem: UnpaidParkingItem = {
       id: 'active',
@@ -208,10 +207,10 @@ module.exports = class VehicleDevice extends Homey.Device {
       endTime: null,
     };
 
-    const message = this.formatTimelineText(pseudoItem, paymentUrl);
+    const message = this.formatTimelineText(pseudoItem);
     await this.homey.notifications.createNotification({
       excerpt: message,
-    }).catch(this.error);
+    }).catch((err: any) => this.error(err));
 
     this.log('Tidslinjevarsel ble opprettet i Homey.');
   }
@@ -266,18 +265,18 @@ module.exports = class VehicleDevice extends Homey.Device {
       }
 
       // Oppdater capabilities
-      await this.setCapabilityValue('alarm_generic', true).catch(this.error);
-      await this.setCapabilityValue('sesam_unpaid_amount', `${result.totalAmount} kr`).catch(this.error);
-      await this.setCapabilityValue('sesam_unpaid_count', result.parkings.length).catch(this.error);
-      await this.setCapabilityValue('sesam_hours_remaining', `${minHours} t`).catch(this.error);
-      await this.setCapabilityValue('sesam_facility', facilityDisplay).catch(this.error);
-      await this.setCapabilityValue('sesam_payment_status', 'Betale').catch(this.error);
+      await this.setCapabilityValue('alarm_generic', true).catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_unpaid_amount', `${result.totalAmount} kr`).catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_unpaid_count', result.parkings.length).catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_hours_remaining', `${minHours} t`).catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_facility', facilityDisplay).catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_payment_status', 'Betale').catch((err: any) => this.error(err));
 
       // Sjekk om det er nye parkeringer vi ikke har varslet om
       for (const p of result.parkings) {
         const itemPaymentUrl = p.paymentUrl || paymentUrl;
         const deadlineStr = this.formatDateTime(p.deadline);
-        const timelineMessage = this.formatTimelineText(p, itemPaymentUrl);
+        const timelineMessage = this.formatTimelineText(p);
         const flowMessage = this.formatFlowMessage(p, itemPaymentUrl);
 
         if (!this.knownParkingIds.has(p.id)) {
@@ -289,7 +288,7 @@ module.exports = class VehicleDevice extends Homey.Device {
           if (autoTimeline) {
             await this.homey.notifications.createNotification({
               excerpt: timelineMessage,
-            }).catch(this.error);
+            }).catch((err: any) => this.error(err));
           }
 
           // Trigger flow for ny ubetalt parkering
@@ -319,7 +318,7 @@ module.exports = class VehicleDevice extends Homey.Device {
           // Tidslinjevarsel
           await this.homey.notifications.createNotification({
             excerpt: warnTimeline,
-          }).catch(this.error);
+          }).catch((err: any) => this.error(err));
 
           const app = this.homey.app as any;
           if (app.triggerDeadlineApproaching) {
@@ -345,7 +344,7 @@ module.exports = class VehicleDevice extends Homey.Device {
         // Tidslinje for bekreftelse
         await this.homey.notifications.createNotification({
           excerpt: `✅ Parkering oppgjort for ${devName} (${previousFacility}, ${previousAmount}). Ingen utestående betalinger!`,
-        }).catch(this.error);
+        }).catch((err: any) => this.error(err));
 
         const app = this.homey.app as any;
         if (app.triggerParkingPaid) {
@@ -362,12 +361,12 @@ module.exports = class VehicleDevice extends Homey.Device {
       this.currentParkings = [];
       this.currentPaymentUrl = '';
 
-      await this.setCapabilityValue('alarm_generic', false).catch(this.error);
-      await this.setCapabilityValue('sesam_unpaid_amount', '0 kr').catch(this.error);
-      await this.setCapabilityValue('sesam_unpaid_count', 0).catch(this.error);
-      await this.setCapabilityValue('sesam_hours_remaining', 'Ingen').catch(this.error);
-      await this.setCapabilityValue('sesam_facility', 'Ingen').catch(this.error);
-      await this.setCapabilityValue('sesam_payment_status', 'Betale').catch(this.error);
+      await this.setCapabilityValue('alarm_generic', false).catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_unpaid_amount', '0 kr').catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_unpaid_count', 0).catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_hours_remaining', 'Ingen').catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_facility', 'Ingen').catch((err: any) => this.error(err));
+      await this.setCapabilityValue('sesam_payment_status', 'Betale').catch((err: any) => this.error(err));
     }
 
     return result;

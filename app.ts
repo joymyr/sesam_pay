@@ -64,7 +64,7 @@ module.exports = class SesamPayApp extends Homey.App {
         if (!driver) return true;
         const devices = driver.getDevices() as any[];
         for (const d of devices) {
-          await d.syncUnpaidParking().catch(this.error);
+          await d.syncUnpaidParking().catch((err: any) => this.error(err));
         }
         return true;
       });
@@ -94,11 +94,11 @@ module.exports = class SesamPayApp extends Homey.App {
   }): Promise<void> {
     const vehicleName = device.getName();
     this.log(`Trigger flow: unpaid_parking_found for ${tokens.regnr}`);
-    await this.triggerUnpaidParkingFoundCard.trigger(device, tokens).catch(this.error);
+    await this.triggerUnpaidParkingFoundCard.trigger(device, tokens).catch((err: any) => this.error(err));
     await this.triggerAnyUnpaidParkingFoundCard.trigger({
       ...tokens,
       vehicle_name: vehicleName,
-    }).catch(this.error);
+    }).catch((err: any) => this.error(err));
   }
 
   /**
@@ -115,11 +115,11 @@ module.exports = class SesamPayApp extends Homey.App {
   }): Promise<void> {
     const vehicleName = device.getName();
     this.log(`Trigger flow: deadline_approaching for ${tokens.regnr}`);
-    await this.triggerDeadlineApproachingCard.trigger(device, tokens).catch(this.error);
+    await this.triggerDeadlineApproachingCard.trigger(device, tokens).catch((err: any) => this.error(err));
     await this.triggerAnyDeadlineApproachingCard.trigger({
       ...tokens,
       vehicle_name: vehicleName,
-    }).catch(this.error);
+    }).catch((err: any) => this.error(err));
   }
 
   /**
@@ -132,11 +132,11 @@ module.exports = class SesamPayApp extends Homey.App {
   }): Promise<void> {
     const vehicleName = device.getName();
     this.log(`Trigger flow: parking_paid for ${tokens.regnr}`);
-    await this.triggerParkingPaidCard.trigger(device, tokens).catch(this.error);
+    await this.triggerParkingPaidCard.trigger(device, tokens).catch((err: any) => this.error(err));
     await this.triggerAnyParkingPaidCard.trigger({
       ...tokens,
       vehicle_name: vehicleName,
-    }).catch(this.error);
+    }).catch((err: any) => this.error(err));
   }
 
 };

@@ -11,7 +11,9 @@ export interface UnpaidParkingItem {
   currency: string;
   deadline: Date | null;
   hoursRemaining?: number;
+  paymentUrl?: string;
 }
+
 
 export interface CheckUnpaidResult {
   regNumber: string;

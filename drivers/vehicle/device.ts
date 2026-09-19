@@ -5,9 +5,11 @@ import { CheckUnpaidResult, UnpaidParkingItem } from '../../lib/types';
 module.exports = class VehicleDevice extends Homey.Device {
 
   public currentPaymentUrl: string = '';
+  public currentParkings: UnpaidParkingItem[] = [];
   private pollTimer: NodeJS.Timeout | null = null;
   private knownParkingIds: Set<string> = new Set();
   private warnedDeadlineIds: Set<string> = new Set();
+
 
   async onInit(): Promise<void> {
     this.log(`VehicleDevice initialisert: ${this.getName()}`);
@@ -230,33 +232,49 @@ module.exports = class VehicleDevice extends Homey.Device {
     const hadUnpaidBefore = this.getCapabilityValue('alarm_generic') === true;
 
     if (result.hasUnpaid && result.parkings.length > 0) {
-      const primary = result.parkings[0];
-
-      // Hent direkte betalingslenke hvis mulig
-      let paymentUrl = 'https://sesam-sesam.com/betal-for-parkering/';
-      try {
-        const payRes = await SesamClient.getPaymentRedirectUrl(primary.id, email);
-        if (payRes && payRes.redirectUrl) {
-          paymentUrl = payRes.redirectUrl;
+      // Hent direkte betalingslenke for hver enkelt parkering
+      for (const p of result.parkings) {
+        try {
+          const payRes = await SesamClient.getPaymentRedirectUrl(p.id, email);
+          if (payRes && payRes.redirectUrl) {
+            p.paymentUrl = payRes.redirectUrl;
+          }
+        } catch (err: any) {
+          p.paymentUrl = 'https://sesam-sesam.com/betal-for-parkering/';
         }
-      } catch (err: any) {
-        this.error(`Kunne ikke generere direktelenke, faller tilbake til standardside: ${err.message}`);
       }
+
+      this.currentParkings = result.parkings;
+      const primary = result.parkings[0];
+      const paymentUrl = primary.paymentUrl || 'https://sesam-sesam.com/betal-for-parkering/';
       this.currentPaymentUrl = paymentUrl;
+
+      // Finn tidligste frist blant alle aktive parkeringer
+      const validHours = result.parkings
+        .map(p => p.hoursRemaining)
+        .filter((h): h is number => typeof h === 'number');
+      const minHours = validHours.length > 0 ? Math.min(...validHours) : 48;
+
+      // Visningstekst for anlegg (viser antall hvis flere)
+      let facilityDisplay = primary.facility;
+      if (result.parkings.length > 1) {
+        facilityDisplay = `${primary.facility} (+${result.parkings.length - 1})`;
+      }
 
       // Oppdater capabilities
       await this.setCapabilityValue('alarm_generic', true).catch(this.error);
       await this.setCapabilityValue('sesam_unpaid_amount', `${result.totalAmount} kr`).catch(this.error);
-      await this.setCapabilityValue('sesam_hours_remaining', `${primary.hoursRemaining ?? 0} t`).catch(this.error);
-      await this.setCapabilityValue('sesam_facility', primary.facility).catch(this.error);
+      await this.setCapabilityValue('sesam_hours_remaining', `${minHours} t`).catch(this.error);
+      await this.setCapabilityValue('sesam_facility', facilityDisplay).catch(this.error);
       await this.setCapabilityValue('sesam_payment_status', 'Betale').catch(this.error);
-
-      const deadlineStr = this.formatDateTime(primary.deadline);
-      const timelineMessage = this.formatTimelineText(primary, paymentUrl);
-      const flowMessage = this.formatFlowMessage(primary, paymentUrl);
 
       // Sjekk om det er nye parkeringer vi ikke har varslet om
       for (const p of result.parkings) {
+        const itemPaymentUrl = p.paymentUrl || paymentUrl;
+        const deadlineStr = this.formatDateTime(p.deadline);
+        const timelineMessage = this.formatTimelineText(p, itemPaymentUrl);
+        const flowMessage = this.formatFlowMessage(p, itemPaymentUrl);
+
         if (!this.knownParkingIds.has(p.id)) {
           this.knownParkingIds.add(p.id);
           this.log(`Ny ubetalt parkering funnet (${p.id}): ${p.facility} - ${p.amount} kr`);
@@ -279,7 +297,7 @@ module.exports = class VehicleDevice extends Homey.Device {
               hours_remaining: p.hoursRemaining ?? 48,
               deadline_str: deadlineStr,
               formatted_message: flowMessage,
-              payment_url: paymentUrl,
+              payment_url: itemPaymentUrl,
               end_time: p.endTimeStr || '',
             });
           }
@@ -291,7 +309,7 @@ module.exports = class VehicleDevice extends Homey.Device {
           this.log(`Advarsel: Betalingsfrist under 12 timer for (${p.id}): ${p.hoursRemaining}t igjen`);
 
           const warnTimeline = `⏳ VIKTIG: Betalingsfrist utløper om ${p.hoursRemaining} timer for ${devName} (${p.facility}, ${p.amount} kr)!\nÅpne "${devName}" for å betale.`;
-          const warnFlow = this.formatDeadlineFlowMessage(p, paymentUrl);
+          const warnFlow = this.formatDeadlineFlowMessage(p, itemPaymentUrl);
 
           // Tidslinjevarsel
           await this.homey.notifications.createNotification({
@@ -307,7 +325,7 @@ module.exports = class VehicleDevice extends Homey.Device {
               hours_remaining: p.hoursRemaining,
               deadline_str: deadlineStr,
               formatted_message: warnFlow,
-              payment_url: paymentUrl,
+              payment_url: itemPaymentUrl,
             });
           }
         }
@@ -336,6 +354,7 @@ module.exports = class VehicleDevice extends Homey.Device {
 
       this.knownParkingIds.clear();
       this.warnedDeadlineIds.clear();
+      this.currentParkings = [];
       this.currentPaymentUrl = '';
 
       await this.setCapabilityValue('alarm_generic', false).catch(this.error);
@@ -346,6 +365,7 @@ module.exports = class VehicleDevice extends Homey.Device {
     }
 
     return result;
+
   }
 
 };

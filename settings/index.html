@@ -228,16 +228,36 @@
     };
 
     function getLang() {
-      const h = homeyInstance || window.Homey;
-      const lang = (h && (typeof h.getLanguage === 'function' ? h.getLanguage() : h.language)) || navigator.language || 'en';
-      return lang.startsWith('no') || lang.startsWith('nb') || lang.startsWith('nn') ? 'no' : 'en';
+      try {
+        let str = '';
+        const h = (typeof homeyInstance !== 'undefined' && homeyInstance) || window.Homey;
+        if (h) {
+          if (typeof h.language === 'string') {
+            str = h.language;
+          } else if (typeof h.getLanguage === 'string') {
+            str = h.getLanguage;
+          }
+        }
+        if (!str && typeof navigator !== 'undefined') {
+          str = navigator.language || navigator.userLanguage || '';
+        }
+        str = String(str || '').toLowerCase();
+        if (str.indexOf('no') === 0 || str.indexOf('nb') === 0 || str.indexOf('nn') === 0) {
+          return 'no';
+        }
+        return 'en';
+      } catch (e) {
+        return 'en';
+      }
     }
 
     let homeyInstance = null;
 
     function onHomeyReady(Homey) {
       homeyInstance = Homey;
-      Homey.ready();
+      if (typeof Homey.ready === 'function') {
+        Homey.ready();
+      }
       applyHeaderTranslations();
       loadStatus();
     }
@@ -250,6 +270,7 @@
       const initLoader = document.getElementById('init-loader');
       if (initLoader) initLoader.textContent = t.loading;
     }
+
 
     function loadStatus() {
       const t = I18N[getLang()];
@@ -304,33 +325,62 @@
         `;
 
         if (isUnpaid) {
-          const hoursLeft = v.hoursRemaining !== undefined ? `${v.hoursRemaining} ${t.hours}` : t.deadline_unknown;
-          const targetUrl = v.paymentUrl || 'https://sesam-sesam.com/betal-for-parkering/';
-          const payText = t.btn_pay.replace('{amount}', v.amount);
+          const parkings = (v.parkings && v.parkings.length > 0)
+            ? v.parkings
+            : [{
+                facility: v.facility,
+                amount: v.amount,
+                hoursRemaining: v.hoursRemaining,
+                paymentUrl: v.paymentUrl,
+              }];
 
-          html += `
-            <div class="parking-details">
-              <div class="detail-row">
-                <span class="detail-label">${t.facility}</span>
-                <span class="detail-value">${escapeHtml(v.facility)}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">${t.unpaid_amount}</span>
-                <span class="detail-value" style="color: #b91c1c;">${v.amount} NOK</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">${t.remaining_time}</span>
-                <span class="detail-value">${hoursLeft}</span>
-              </div>
-            </div>
+          const hasMultiple = parkings.length > 1;
 
-            <a href="${targetUrl}" target="_blank" class="pay-btn" onclick="openPayment('${targetUrl}', event)">
-              ${payText}
-            </a>
-            <button class="sync-single-btn" style="width:100%; margin-top:8px; padding:10px;" onclick="copySettingsUrl('${targetUrl}', this)">
-              ${t.btn_copy_settings}
-            </button>
-          `;
+          if (hasMultiple) {
+            html += `
+              <div style="margin: 10px 0 6px 0; font-size: 13px; font-weight: 700; color: #b91c1c;">
+                ● ${parkings.length} ubetalte parkeringer (Totalt: ${v.amount} NOK)
+              </div>
+            `;
+          }
+
+          parkings.forEach((p, idx) => {
+            const hoursLeft = p.hoursRemaining !== undefined ? `${p.hoursRemaining} ${t.hours}` : t.deadline_unknown;
+            const targetUrl = p.paymentUrl || v.paymentUrl || 'https://sesam-sesam.com/betal-for-parkering/';
+            const payText = t.btn_pay.replace('{amount}', p.amount);
+            const ownerInfo = p.owner ? ` (${escapeHtml(p.owner)})` : '';
+            const timeInfo = (p.startTimeStr && p.endTimeStr) ? `${escapeHtml(p.startTimeStr)} – ${escapeHtml(p.endTimeStr)}` : '';
+
+            html += `
+              <div class="parking-details" style="${hasMultiple ? 'border-left: 3px solid #ef4444; margin-bottom: 12px;' : ''}">
+                <div class="detail-row">
+                  <span class="detail-label">${t.facility}</span>
+                  <span class="detail-value">${escapeHtml(p.facility)}${ownerInfo}</span>
+                </div>
+                ${timeInfo ? `
+                  <div class="detail-row">
+                    <span class="detail-label">Tid</span>
+                    <span class="detail-value" style="font-size: 12px;">${timeInfo}</span>
+                  </div>
+                ` : ''}
+                <div class="detail-row">
+                  <span class="detail-label">${t.unpaid_amount}</span>
+                  <span class="detail-value" style="color: #b91c1c;">${p.amount} NOK</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">${t.remaining_time}</span>
+                  <span class="detail-value">${hoursLeft}</span>
+                </div>
+
+                <a href="${targetUrl}" target="_blank" class="pay-btn" style="padding: 10px 14px; font-size: 14px; margin-top: 10px;" onclick="openPayment('${targetUrl}', event)">
+                  ${payText}
+                </a>
+                <button class="sync-single-btn" style="width:100%; margin-top:6px; padding:8px; font-size: 12px;" onclick="copySettingsUrl('${targetUrl}', this)">
+                  ${t.btn_copy_settings}
+                </button>
+              </div>
+            `;
+          });
         } else {
           html += `
             <p style="color: #64748b; font-size: 13px; margin-top: 8px;">
@@ -338,6 +388,7 @@
             </p>
           `;
         }
+
 
         html += `
             <button class="sync-single-btn" onclick="syncVehicle('${v.id}')">${t.btn_check_now}</button>

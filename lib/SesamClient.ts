@@ -87,31 +87,39 @@ export class SesamClient {
       };
     }
 
-    // Finn eier hvis oppgitt (f.eks. "Bergen Parkering AS")
-    let owner: string | undefined;
-    const ownerElem = root.querySelector('.cscustomer_h2');
-    if (ownerElem) {
-      const ownerText = ownerElem.text.trim();
-      owner = ownerText.replace(/^Eieren:\s*/i, '').trim();
-    }
-
+    const listHolder = root.querySelector('#list_holder');
     const parkings: UnpaidParkingItem[] = [];
 
-    for (const pw of paymentWrappers) {
-      const item = this.parseParkingWrapper(pw, owner);
-      if (item) {
-        parkings.push(item);
+    if (listHolder) {
+      let currentOwner: string | undefined;
+      for (const child of listHolder.childNodes) {
+        if (!(child instanceof HTMLElement)) continue;
+
+        if (child.classList && child.classList.contains('cscustomer_h2')) {
+          const ownerText = child.text.trim();
+          currentOwner = ownerText.replace(/^Eieren:\s*/i, '').trim();
+        } else if (child.classList && child.classList.contains('payment_wrapper')) {
+          const item = this.parseParkingWrapper(child, currentOwner);
+          if (item) {
+            parkings.push(item);
+          }
+        }
       }
     }
 
-    // Beregn eller hent totalbeløp
-    let totalAmount = 0;
-    const totalElem = root.querySelector('.sesamsesam-parking-total-amount-diff');
-    if (totalElem) {
-      totalAmount = this.parseAmount(totalElem.text);
-    } else {
-      totalAmount = parkings.reduce((sum, p) => sum + p.amount, 0);
+    // Fallback if list_holder iteration didn't find items
+    if (parkings.length === 0) {
+      const paymentWrappers = root.querySelectorAll('.payment_wrapper');
+      for (const pw of paymentWrappers) {
+        const item = this.parseParkingWrapper(pw);
+        if (item) {
+          parkings.push(item);
+        }
+      }
     }
+
+    // Beregn alltid totalbeløp som summen av alle ubetalte parkeringer
+    const totalAmount = Math.round(parkings.reduce((sum, p) => sum + p.amount, 0) * 100) / 100;
 
     return {
       regNumber,
@@ -122,6 +130,7 @@ export class SesamClient {
       checkedAt: new Date(),
     };
   }
+
 
   private static parseParkingWrapper(wrapper: HTMLElement, defaultOwner?: string): UnpaidParkingItem | null {
     // ID fra input checkbox

@@ -54,29 +54,30 @@
       cursor: not-allowed;
     }
   </style>
+  <script type="text/javascript" src="/homey.js" data-origin="pair"></script>
 </head>
 <body>
   <div class="form-group">
-    <label for="name" id="lbl-name">Vehicle Name</label>
-    <input type="text" id="name" placeholder="e.g. My Tesla or VW Golf" />
-    <div class="hint" id="hint-name">Optional display name in Homey</div>
+    <label id="lbl-name" for="name">Vehicle Name</label>
+    <input type="text" id="name" placeholder="e.g. Ford Mustang Mach-E">
+    <div id="hint-name" class="hint">A recognizable name for this vehicle in Homey.</div>
   </div>
 
   <div class="form-group">
-    <label for="regNumber" id="lbl-reg">Registration Number *</label>
-    <input type="text" id="regNumber" placeholder="e.g. AB12345" style="text-transform: uppercase;" required />
-    <div class="hint" id="hint-reg">Norwegian or foreign license plate</div>
+    <label id="lbl-reg" for="regNumber">License Plate (Required)</label>
+    <input type="text" id="regNumber" placeholder="e.g. EC66453" style="text-transform: uppercase;">
+    <div id="hint-reg" class="hint">Registration number to monitor on sesam-sesam.com.</div>
   </div>
 
   <div class="form-group">
-    <label for="pollInterval" id="lbl-poll">Check Interval (minutes)</label>
-    <input type="number" id="pollInterval" value="30" min="5" max="1440" />
-    <div class="hint" id="hint-poll">How often the app checks for unpaid parking sessions</div>
+    <label id="lbl-poll" for="pollInterval">Check Interval (Minutes)</label>
+    <input type="number" id="pollInterval" value="30" min="5" max="1440">
+    <div id="hint-poll" class="hint">How often to check for unpaid parking (default: 30 minutes).</div>
   </div>
 
   <div class="form-group">
-    <label for="email" id="lbl-email">Email for receipt (optional)</label>
-    <input type="email" id="email" placeholder="you@email.com" />
+    <label id="lbl-email" for="email">Receipt Email (Optional)</label>
+    <input type="email" id="email" placeholder="your.email@example.com">
   </div>
 
   <div id="error" class="error"></div>
@@ -87,41 +88,70 @@
       en: {
         title: "Add Vehicle",
         name_label: "Vehicle Name",
-        name_ph: "e.g. My Tesla or VW Golf",
-        name_hint: "Optional display name in Homey",
-        reg_label: "Registration Number *",
-        reg_ph: "e.g. AB12345",
-        reg_hint: "Norwegian or foreign license plate",
-        poll_label: "Check Interval (minutes)",
-        poll_hint: "How often the app checks for unpaid parking sessions",
-        email_label: "Email for receipt (optional)",
-        email_ph: "you@email.com",
+        name_ph: "e.g. Ford Mustang Mach-E",
+        name_hint: "A recognizable name for this vehicle in Homey.",
+        reg_label: "License Plate (Required)",
+        reg_ph: "e.g. EC66453",
+        reg_hint: "Registration number to monitor on sesam-sesam.com.",
+        poll_label: "Check Interval (Minutes)",
+        poll_hint: "How often to check for unpaid parking (default: 30 minutes).",
+        email_label: "Receipt Email (Optional)",
+        email_ph: "your.email@example.com",
         btn_add: "Add Vehicle",
         btn_checking: "Checking Sesam Sesam...",
-        err_invalid_reg: "Please enter a valid registration number."
+        err_invalid_reg: "Please enter a valid license plate."
       },
       no: {
         title: "Legg til kjøretøy",
-        name_label: "Navn på kjøretøy",
-        name_ph: "F.eks. Min Tesla eller VW Golf",
-        name_hint: "Valgfritt visningsnavn i Homey",
-        reg_label: "Registreringsnummer *",
-        reg_ph: "F.eks. AB12345",
-        reg_hint: "Norsk eller utenlandsk kjennetegn",
-        poll_label: "Sjekkintervall (minutter)",
-        poll_hint: "Hvor ofte appen sjekker etter nye ubetalte parkeringer",
-        email_label: "E-post for kvittering (valgfritt)",
-        email_ph: "din@epost.no",
+        name_label: "Kjøretøynavn",
+        name_ph: "f.eks. Ford Mustang Mach-E",
+        name_hint: "Et gjenkjennelig navn for bilen i Homey.",
+        reg_label: "Registreringsnummer (Påkrevd)",
+        reg_ph: "f.eks. EC66453",
+        reg_hint: "Bilskiltet som skal overvåkes på sesam-sesam.com.",
+        poll_label: "Sjekkintervall (Minutter)",
+        poll_hint: "Hvor ofte det skal søkes etter ubetalt parkering (standard: 30 min).",
+        email_label: "E-post for kvittering (Valgfritt)",
+        email_ph: "din.epost@eksempel.no",
         btn_add: "Legg til kjøretøy",
         btn_checking: "Sjekker Sesam Sesam...",
         err_invalid_reg: "Vennligst oppgi et gyldig registreringsnummer."
       }
     };
 
+    let homeyInstance = null;
+
     function getLang() {
-      const h = window.Homey;
-      const lang = (h && (typeof h.getLanguage === 'function' ? h.getLanguage() : h.language)) || navigator.language || 'en';
-      return lang.startsWith('no') || lang.startsWith('nb') || lang.startsWith('nn') ? 'no' : 'en';
+      try {
+        let str = '';
+        const h = (typeof homeyInstance !== 'undefined' && homeyInstance) || window.Homey;
+        if (h) {
+          if (typeof h.language === 'string') {
+            str = h.language;
+          } else if (typeof h.getLanguage === 'string') {
+            str = h.getLanguage;
+          }
+        }
+
+        if (!str && typeof navigator !== 'undefined') {
+          str = navigator.language || navigator.userLanguage || '';
+        }
+        str = String(str || '').toLowerCase();
+        if (str.indexOf('no') === 0 || str.indexOf('nb') === 0 || str.indexOf('nn') === 0) {
+          return 'no';
+        }
+        return 'en';
+      } catch (e) {
+        return 'en';
+      }
+    }
+
+    function onHomeyReady(Homey) {
+      homeyInstance = Homey;
+      if (typeof Homey.ready === 'function') {
+        Homey.ready();
+      }
+      applyTranslations();
     }
 
     function applyTranslations() {

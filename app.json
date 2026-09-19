@@ -42,6 +42,11 @@
       "method": "post",
       "path": "/sync",
       "public": false
+    },
+    "logMessage": {
+      "method": "post",
+      "path": "/log",
+      "public": true
     }
   },
   "capabilities": {

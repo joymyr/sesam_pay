@@ -15,6 +15,9 @@ module.exports = {
     for (const d of devices) {
       const rawAmount = String(d.getCapabilityValue('sesam_unpaid_amount') || '0').replace(/[^\d.,]/g, '').replace(',', '.');
       const rawHours = String(d.getCapabilityValue('sesam_hours_remaining') || '0').replace(/[^\d.,]/g, '').replace(',', '.');
+      const parkings = (d as any).currentParkings || [];
+      const unpaidCount = Number(d.getCapabilityValue('sesam_unpaid_count')) || parkings.length;
+      const uniqueFacilities = Array.from(new Set(parkings.map((p: any) => (p.facility || '').trim()).filter(Boolean)));
       list.push({
         id: d.getData().id,
         guid: d.id || d.getData().id,
@@ -25,7 +28,9 @@ module.exports = {
         facility: d.getCapabilityValue('sesam_facility') || 'Ingen',
         hoursRemaining: parseFloat(rawHours) || 0,
         paymentUrl: (d as any).currentPaymentUrl || 'https://sesam-sesam.com/betal-for-parkering/',
-        parkings: (d as any).currentParkings || [],
+        parkings,
+        unpaidCount,
+        uniqueFacilitiesCount: uniqueFacilities.length,
       });
     }
 

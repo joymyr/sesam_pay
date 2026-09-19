@@ -108,6 +108,55 @@
       margin: 12px 0;
       font-size: 14px;
     }
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #0f172a;
+        color: #f8fafc;
+      }
+      .header h1 {
+        color: #f8fafc;
+      }
+      .vehicle-card {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+      }
+      .vehicle-name {
+        color: #f8fafc !important;
+      }
+      .parking-details {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-color: #334155 !important;
+      }
+      .detail-row {
+        border-bottom-color: #334155 !important;
+      }
+      .detail-label {
+        color: #94a3b8 !important;
+      }
+      .detail-value {
+        color: #f8fafc !important;
+      }
+      .tip-box {
+        background-color: #1e3a5f !important;
+        border-color: #2563eb !important;
+        color: #bfdbfe !important;
+      }
+      .refresh-btn {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+      }
+      .sync-single-btn {
+        border-color: #475569 !important;
+        color: #94a3b8 !important;
+      }
+      .empty-state {
+        background-color: #1e293b !important;
+        color: #94a3b8 !important;
+      }
+    }
+
     .detail-row {
       display: flex;
       justify-content: space-between;
@@ -125,22 +174,33 @@
       color: #0f172a;
     }
     .pay-btn {
-      display: block;
-      width: 100%;
-      background-color: #2563eb;
+      display: block !important;
+      width: 100% !important;
+      background-color: #2563eb !important;
       color: #ffffff !important;
-      text-align: center;
-      padding: 13px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 15px;
-      margin-top: 14px;
-      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      text-align: center !important;
+      padding: 14px 16px !important;
+      border-radius: 8px !important;
+      text-decoration: none !important;
+      font-weight: 700 !important;
+      font-size: 15px !important;
+      margin-top: 12px !important;
+      border: none !important;
+      outline: none !important;
+      cursor: pointer !important;
+      -webkit-appearance: none !important;
+      appearance: none !important;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3) !important;
+      transition: background-color 0.2s, transform 0.1s !important;
     }
     .pay-btn:active {
-      background-color: #1d4ed8;
-      transform: scale(0.99);
+      background-color: #1d4ed8 !important;
+      transform: scale(0.98) !important;
+    }
+    .pay-btn.copied {
+      background-color: #059669 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3) !important;
     }
     .sync-single-btn {
       background: transparent;
@@ -197,10 +257,9 @@
         unpaid_amount: "Unpaid amount",
         remaining_time: "Remaining time",
         hours: "hours",
-        deadline_unknown: "Deadline unknown",
-        btn_pay: "💳 Pay fee-free ({amount} kr) ↗",
-        btn_copy_settings: "📋 Copy payment link (for Safari/Chrome)",
-        btn_copied_settings: "✓ Link copied! Open in Safari/Chrome",
+        btn_copy: "📋 Copy payment link ({amount} kr)",
+        btn_copied: "✓ Payment link copied!",
+        tip_text: "💡 <strong>Tip:</strong> Tap «Copy payment link» and open in Safari or Chrome to complete payment with BankID or Vipps.",
         all_settled_desc: "All settled. The app automatically monitors new entries and exits.",
         btn_check_now: "⟳ Check now"
       },
@@ -219,9 +278,9 @@
         remaining_time: "Gjenstående tid",
         hours: "timer",
         deadline_unknown: "Frist ukjent",
-        btn_pay: "💳 Betal gebyrfritt ({amount} kr) ↗",
-        btn_copy_settings: "📋 Kopier betalingslenke (til Safari/Chrome)",
-        btn_copied_settings: "✓ Lenke kopiert! Åpne i Safari/Chrome",
+        btn_copy: "📋 Kopier betalingslenke ({amount} kr)",
+        btn_copied: "✓ Betalingslenke kopiert!",
+        tip_text: "💡 <strong>Tips:</strong> Trykk «Kopier betalingslenke» og lim inn i nettleser (Safari/Chrome) for å fullføre betaling med BankID eller Vipps.",
         all_settled_desc: "Alt er oppgjort. Appen overvåker automatisk nye inn- og utkjøringer.",
         btn_check_now: "⟳ Sjekk nå"
       }
@@ -311,7 +370,23 @@
         const isUnpaid = v.hasUnpaid;
         const cardClass = isUnpaid ? 'has-unpaid' : 'ok';
         const badgeClass = isUnpaid ? 'unpaid' : 'paid';
-        const badgeText = isUnpaid ? t.badge_unpaid : t.badge_paid;
+
+        const parkings = (v.parkings && v.parkings.length > 0)
+          ? v.parkings
+          : (isUnpaid ? [{
+              facility: v.facility,
+              amount: v.amount,
+              hoursRemaining: v.hoursRemaining,
+              paymentUrl: v.paymentUrl,
+            }] : []);
+
+        const hasMultiple = parkings.length > 1;
+        const uniqueFacilities = Array.from(new Set(parkings.map(p => (p.facility || '').trim()).filter(Boolean)));
+        
+        let badgeText = isUnpaid ? t.badge_unpaid : t.badge_paid;
+        if (isUnpaid && hasMultiple) {
+          badgeText = `● ${parkings.length} ${getLang() === 'no' ? 'ubetalte' : 'unpaid'}`;
+        }
 
         html += `
           <div class="vehicle-card ${cardClass}">
@@ -325,29 +400,29 @@
         `;
 
         if (isUnpaid) {
-          const parkings = (v.parkings && v.parkings.length > 0)
-            ? v.parkings
-            : [{
-                facility: v.facility,
-                amount: v.amount,
-                hoursRemaining: v.hoursRemaining,
-                paymentUrl: v.paymentUrl,
-              }];
-
-          const hasMultiple = parkings.length > 1;
-
+          let summaryHtml = '';
           if (hasMultiple) {
-            html += `
-              <div style="margin: 10px 0 6px 0; font-size: 13px; font-weight: 700; color: #b91c1c;">
-                ● ${parkings.length} ubetalte parkeringer (Totalt: ${v.amount} NOK)
+            const facSummary = uniqueFacilities.length > 1
+              ? `${uniqueFacilities.length} ulike anlegg: ${uniqueFacilities.map(f => escapeHtml(f)).join(', ')}`
+              : `${escapeHtml(uniqueFacilities[0] || v.facility)}`;
+            summaryHtml = `
+              <div style="margin: 10px 0 8px 0; font-size: 13px; font-weight: 700; color: #b91c1c;">
+                ● ${parkings.length} ubetalte parkeringer (${facSummary}) – Totalt: ${v.amount} NOK
+              </div>
+            `;
+          } else if (parkings.length === 1) {
+            summaryHtml = `
+              <div style="margin: 10px 0 8px 0; font-size: 13px; font-weight: 700; color: #b91c1c;">
+                ● 1 ubetalt parkering – ${v.amount} NOK
               </div>
             `;
           }
+          html += summaryHtml;
 
           parkings.forEach((p, idx) => {
             const hoursLeft = p.hoursRemaining !== undefined ? `${p.hoursRemaining} ${t.hours}` : t.deadline_unknown;
             const targetUrl = p.paymentUrl || v.paymentUrl || 'https://sesam-sesam.com/betal-for-parkering/';
-            const payText = t.btn_pay.replace('{amount}', p.amount);
+            const payText = t.btn_copy.replace('{amount}', p.amount);
             const ownerInfo = p.owner ? ` (${escapeHtml(p.owner)})` : '';
             const timeInfo = (p.startTimeStr && p.endTimeStr) ? `${escapeHtml(p.startTimeStr)} – ${escapeHtml(p.endTimeStr)}` : '';
 
@@ -372,15 +447,18 @@
                   <span class="detail-value">${hoursLeft}</span>
                 </div>
 
-                <a href="${targetUrl}" target="_blank" class="pay-btn" style="padding: 10px 14px; font-size: 14px; margin-top: 10px;" onclick="openPayment('${targetUrl}', event)">
+                <button class="pay-btn" style="cursor: pointer; border: none; outline: none; margin-top: 10px; width: 100%; font-family: inherit;" onclick="copySettingsUrl('${targetUrl}', this)">
                   ${payText}
-                </a>
-                <button class="sync-single-btn" style="width:100%; margin-top:6px; padding:8px; font-size: 12px;" onclick="copySettingsUrl('${targetUrl}', this)">
-                  ${t.btn_copy_settings}
                 </button>
               </div>
             `;
           });
+
+          html += `
+            <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px; font-size: 12px; color: #1e40af; margin: 10px 0 14px 0; line-height: 1.4;">
+              ${t.tip_text}
+            </div>
+          `;
         } else {
           html += `
             <p style="color: #64748b; font-size: 13px; margin-top: 8px;">
@@ -388,7 +466,6 @@
             </p>
           `;
         }
-
 
         html += `
             <button class="sync-single-btn" onclick="syncVehicle('${v.id}')">${t.btn_check_now}</button>
@@ -418,12 +495,12 @@
       const t = I18N[getLang()];
       if (btn) {
         const orig = btn.innerText;
-        btn.innerText = t.btn_copied_settings;
-        btn.style.background = '#d1fae5';
+        btn.innerText = t.btn_copied;
+        btn.style.backgroundColor = '#059669';
         setTimeout(() => {
           btn.innerText = orig;
-          btn.style.background = 'transparent';
-        }, 4000);
+          btn.style.backgroundColor = '#2563eb';
+        }, 3500);
       }
     }
 

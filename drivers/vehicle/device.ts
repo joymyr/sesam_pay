@@ -77,6 +77,7 @@ module.exports = class VehicleDevice extends Homey.Device {
     const required = [
       'alarm_generic',
       'sesam_unpaid_amount',
+      'sesam_unpaid_count',
       'sesam_hours_remaining',
       'sesam_facility',
       'sesam_payment_status',
@@ -255,15 +256,19 @@ module.exports = class VehicleDevice extends Homey.Device {
         .filter((h): h is number => typeof h === 'number');
       const minHours = validHours.length > 0 ? Math.min(...validHours) : 48;
 
-      // Visningstekst for anlegg (viser antall hvis flere)
+      // Visningstekst for anlegg (viser antall ulike hvis flere)
+      const uniqueFacilities = Array.from(new Set(result.parkings.map(p => (p.facility || '').trim()).filter(Boolean)));
       let facilityDisplay = primary.facility;
-      if (result.parkings.length > 1) {
-        facilityDisplay = `${primary.facility} (+${result.parkings.length - 1})`;
+      if (uniqueFacilities.length > 1) {
+        facilityDisplay = `${uniqueFacilities.length} ulike anlegg`;
+      } else if (result.parkings.length > 1) {
+        facilityDisplay = `${primary.facility} (${result.parkings.length} parkeringer)`;
       }
 
       // Oppdater capabilities
       await this.setCapabilityValue('alarm_generic', true).catch(this.error);
       await this.setCapabilityValue('sesam_unpaid_amount', `${result.totalAmount} kr`).catch(this.error);
+      await this.setCapabilityValue('sesam_unpaid_count', result.parkings.length).catch(this.error);
       await this.setCapabilityValue('sesam_hours_remaining', `${minHours} t`).catch(this.error);
       await this.setCapabilityValue('sesam_facility', facilityDisplay).catch(this.error);
       await this.setCapabilityValue('sesam_payment_status', 'Betale').catch(this.error);
@@ -359,6 +364,7 @@ module.exports = class VehicleDevice extends Homey.Device {
 
       await this.setCapabilityValue('alarm_generic', false).catch(this.error);
       await this.setCapabilityValue('sesam_unpaid_amount', '0 kr').catch(this.error);
+      await this.setCapabilityValue('sesam_unpaid_count', 0).catch(this.error);
       await this.setCapabilityValue('sesam_hours_remaining', 'Ingen').catch(this.error);
       await this.setCapabilityValue('sesam_facility', 'Ingen').catch(this.error);
       await this.setCapabilityValue('sesam_payment_status', 'Betale').catch(this.error);

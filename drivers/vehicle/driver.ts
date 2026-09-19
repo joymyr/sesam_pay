@@ -64,6 +64,8 @@ module.exports = class VehicleDriver extends Homey.Driver {
         
         const paymentUrl = (device as any).currentPaymentUrl || 'https://sesam-sesam.com/betal-for-parkering/';
         const parkings = (device as any).currentParkings || [];
+        const unpaidCount = Number(device.getCapabilityValue('sesam_unpaid_count')) || parkings.length;
+        const uniqueFacilities = Array.from(new Set(parkings.map((p: any) => (p.facility || '').trim()).filter(Boolean)));
 
         return {
           id: data.id || device.id || regNumber,
@@ -75,6 +77,8 @@ module.exports = class VehicleDriver extends Homey.Driver {
           hoursRemaining,
           paymentUrl,
           parkings,
+          unpaidCount,
+          uniqueFacilitiesCount: uniqueFacilities.length,
         };
       } catch (err: any) {
         this.error(`Feil under henting av statusobjekt i onRepair: ${err.message}`);
@@ -88,6 +92,8 @@ module.exports = class VehicleDriver extends Homey.Driver {
           hoursRemaining: 0,
           paymentUrl: 'https://sesam-sesam.com/betal-for-parkering/',
           parkings: [],
+          unpaidCount: 0,
+          uniqueFacilitiesCount: 0,
         };
       }
     };

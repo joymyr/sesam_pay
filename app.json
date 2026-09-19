@@ -83,6 +83,23 @@
       "uiComponent": "sensor",
       "icon": "/assets/icon.svg"
     },
+    "sesam_unpaid_count": {
+      "type": "number",
+      "title": {
+        "en": "Unpaid Parkings",
+        "no": "Antall ubetalte"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg",
+      "units": {
+        "en": "stk",
+        "no": "stk"
+      },
+      "min": 0,
+      "decimals": 0
+    },
     "sesam_payment_status": {
       "type": "string",
       "title": {
@@ -107,6 +124,7 @@
       "capabilities": [
         "alarm_generic",
         "sesam_unpaid_amount",
+        "sesam_unpaid_count",
         "sesam_hours_remaining",
         "sesam_facility",
         "sesam_payment_status"
